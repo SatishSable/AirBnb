@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override"); // fixed spelling
+const ejsMate = require("ejs-mate");
 
 const app = express();
 const MONGO_URL = "mongodb://127.0.0.1:27017/Wanderlust";
@@ -15,6 +16,7 @@ app.use(methodOverride("_method"));
 // Set view engine and views folder
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.engine('ejs' , ejsMate);
 
 // Connect to MongoDB
 main()
