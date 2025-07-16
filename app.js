@@ -4,6 +4,8 @@ const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override"); // fixed spelling
 const ejsMate = require("ejs-mate");
+const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./utils/ExpressError.js");
 
 const app = express();
 const MONGO_URL = "mongodb://127.0.0.1:27017/Wanderlust";
@@ -56,11 +58,15 @@ app.get("/listings/:id", async (req, res) => {
 });
 
 // Create route - post new listing
-app.post("/listings", async (req, res) => {
-  const newListing = new Listing(req.body.listing);
+app.post("/listings", wrapAsync( async(req, res , next) => {
+  
+    const newListing = new Listing(req.body.listing);
   await newListing.save();
   res.redirect("/listings"); // fixed redirect path
-});
+  
+  
+  
+}));
 
 // Edit route - show edit form
 app.get("/listings/:id/edit", async (req, res) => {
@@ -83,6 +89,17 @@ app.delete("/listings/:id" , async(req ,res) => {
  let deleteListing = await Listing.findByIdAndDelete(id);
  console.log(deleteListing);
  res.redirect("/listings");
+})
+
+// not found route
+app.all("*" ,(req ,res ,next) => {
+  next(new ExpressError(404 , "page not found"));
+})
+
+// error handling middleware
+app.use((err, req, res, next)=>{
+  let{ statusCode , message} = err;
+ res.status(statusCode).send(message);
 })
 
 
