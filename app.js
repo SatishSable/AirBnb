@@ -40,10 +40,10 @@ app.get("/", (req, res) => {
 });
 
 // Index route - all listings
-app.get("/listings", async (req, res) => {
+app.get("/listings", wrapAsync(async (req, res) => {
   const allListings = await Listing.find({});
   res.render("listings/index.ejs", { allListings }); // no './'
-});
+}));
 
 // New route - show form
 app.get("/listings/new", (req, res) => {
@@ -51,14 +51,17 @@ app.get("/listings/new", (req, res) => {
 });
 
 // Show route - single listing
-app.get("/listings/:id", async (req, res) => {
+app.get("/listings/:id", wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
   res.render("listings/show.ejs", { listing });
-});
+}));
 
 // Create route - post new listing
 app.post("/listings", wrapAsync( async(req, res , next) => {
+  if(!req.body.listing){
+    throw new ExpressError(400 , "send valid data for listing");
+  }
   
     const newListing = new Listing(req.body.listing);
   await newListing.save();
@@ -69,37 +72,38 @@ app.post("/listings", wrapAsync( async(req, res , next) => {
 }));
 
 // Edit route - show edit form
-app.get("/listings/:id/edit", async (req, res) => {
+app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
   res.render("listings/edit.ejs", { listing });
-});
+}));
 
 // Update route - put updated listing
-app.put("/listings/:id", async (req, res) => {
+app.put("/listings/:id", wrapAsync(async (req, res) => {
   console.log("Updating listing:", req.body.listing); // For debug
   const { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
   res.redirect("/listings");
-});
+}));
 
 // delete route
-app.delete("/listings/:id" , async(req ,res) => {
+app.delete("/listings/:id" , wrapAsync(async(req ,res) => {
   const { id } = req.params;
  let deleteListing = await Listing.findByIdAndDelete(id);
  console.log(deleteListing);
  res.redirect("/listings");
-})
+}));
 
 // not found route
-app.all("*" ,(req ,res ,next) => {
-  next(new ExpressError(404 , "page not found"));
-})
+// app.all("*", (req, res, next) => {
+//   next(new ExpressError(404, "Page Not Found"));
+// });
 
 // error handling middleware
 app.use((err, req, res, next)=>{
-  let{ statusCode , message} = err;
- res.status(statusCode).send(message);
+  let{ statusCode = 500  , message = "some thing went wrong!" } = err;
+//  res.status(statusCode).send(message);
+    res.render("error.ejs" , {err});
 })
 
 
