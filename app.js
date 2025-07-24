@@ -6,7 +6,8 @@ const methodOverride = require("method-override"); // fixed spelling
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema} = require("./schema.js")
+const {listingSchema} = require("./schema.js");
+const Review = require("./models/review.js");
 
 const app = express();
 const MONGO_URL = "mongodb://127.0.0.1:27017/Wanderlust";
@@ -43,6 +44,7 @@ app.get("/", (req, res) => {
 // Index route - all listings
 app.get("/listings", wrapAsync(async (req, res) => {
   const allListings = await Listing.find({});
+  console.log("Showing all listings", allListings)
   res.render("listings/index.ejs", { allListings }); // no './'
 }));
 
@@ -93,6 +95,20 @@ app.delete("/listings/:id" , wrapAsync(async(req ,res) => {
  res.redirect("/listings");
 }));
 
+// Reviews route - show reviews for a listing
+app.post("/listings/:id/reviews", wrapAsync(async (req, res) => {
+  let id = req.params.id.trim(); // Trim spaces
+  let listing = await Listing.findById(id);
+  let newReview = new Review(req.body.review); // should be lowercase 'review'
+
+  listing.reviews.push(newReview);
+
+  await newReview.save();
+  await listing.save(); // Save the updated listing
+  res.redirect(`/listings/${id}`);
+}));
+
+
 // not found route
 // app.all("*", (req, res, next) => {
 //   next(new ExpressError(404, "Page Not Found"));
@@ -100,7 +116,7 @@ app.delete("/listings/:id" , wrapAsync(async(req ,res) => {
 
 // error handling middleware
 app.use((err, req, res, next)=>{
-  let{ statusCode = 500  , message = "some thing went wrong!" } = err;
+  let{ statusCode = 500  , message = "something went wrong!" } = err;
 //  res.status(statusCode).send(message);
     res.render("error.ejs" , {err});
 })
