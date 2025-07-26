@@ -6,7 +6,7 @@ const methodOverride = require("method-override"); // fixed spelling
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema} = require("./schema.js");
+const {listingSchema , reviewSchema} = require("./schema.js");
 const Review = require("./models/review.js");
 
 const app = express();
@@ -40,6 +40,26 @@ async function main() {
 app.get("/", (req, res) => {
   res.send("Hi, I am route");
 });
+
+const validateListing = (req, res, next) => {
+  let { error } = listingSchema.validate(req.body);
+  if (error) {
+    let msg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, msg);
+  } else {
+    next();
+  }
+}
+
+const validateReview = (req, res, next) => {
+  let { error } = reviewSchema.validate(req.body);
+  if (error) {
+    let msg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, msg);
+  } else {
+    next();
+  }
+}
 
 // Index route - all listings
 app.get("/listings", wrapAsync(async (req, res) => {
@@ -96,7 +116,7 @@ app.delete("/listings/:id" , wrapAsync(async(req ,res) => {
 }));
 
 // Reviews route - show reviews for a listing
-app.post("/listings/:id/reviews", wrapAsync(async (req, res) => {
+app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => {
   let id = req.params.id.trim(); // Trim spaces
   let listing = await Listing.findById(id);
   let newReview = new Review(req.body.review); // should be lowercase 'review'
@@ -105,7 +125,7 @@ app.post("/listings/:id/reviews", wrapAsync(async (req, res) => {
 
   await newReview.save();
   await listing.save(); // Save the updated listing
-  res.redirect(`/listings/${id}`);
+  res.redirect(`/listings/${listing._id}`);
 }));
 
 
