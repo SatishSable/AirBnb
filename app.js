@@ -8,7 +8,6 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const {listingSchema , reviewSchema} = require("./schema.js");
 const Review = require("./models/review.js");
-
 const app = express();
 const MONGO_URL = "mongodb://127.0.0.1:27017/Wanderlust";
 
@@ -76,7 +75,7 @@ app.get("/listings/new", (req, res) => {
 // Show route - single listing
 app.get("/listings/:id", wrapAsync(async (req, res) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate("reviews");
   res.render("listings/show.ejs", { listing });
 }));
 
@@ -115,7 +114,7 @@ app.delete("/listings/:id" , wrapAsync(async(req ,res) => {
  res.redirect("/listings");
 }));
 
-// Reviews route - show reviews for a listing
+// post Reviews route - show reviews for a listing
 app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => {
   let id = req.params.id.trim(); // Trim spaces
   let listing = await Listing.findById(id);
@@ -126,6 +125,15 @@ app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => 
   await newReview.save();
   await listing.save(); // Save the updated listing
   res.redirect(`/listings/${listing._id}`);
+}));
+
+// delete  review route
+
+app.delete("/listings/:listingId/reviews/:reviewId", wrapAsync(async (req, res) => {
+  const { listingId, reviewId } = req.params;
+  await Listing.findByIdAndUpdate(listingId, { $pull: { reviews: reviewId } });
+  await Review.findByIdAndDelete(reviewId);
+  res.redirect(`/listings/${listingId}`);
 }));
 
 
