@@ -137,10 +137,6 @@ app.delete("/listings/:listingId/reviews/:reviewId", wrapAsync(async (req, res) 
 }));
 
 
-// not found route
-// app.all("*", (req, res, next) => {
-//   next(new ExpressError(404, "Page Not Found"));
-// });
 
 // error handling middleware
 app.use((err, req, res, next)=>{
