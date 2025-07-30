@@ -58,7 +58,7 @@ router.get("/:id/edit", wrapAsync(async (req, res) => {
 
 // Update route - put updated listing
 router.put("/:id", wrapAsync(async (req, res) => {
-  console.log("Updating listing:", req.body.listing); // For debug
+  
   const { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
   res.redirect("/listings");

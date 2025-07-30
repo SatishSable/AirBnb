@@ -63,8 +63,37 @@ const validateReview = (req, res, next) => {
 }
 app.use("/listings", listings);
 
+app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => {
+  let id = req.params.id.trim(); // fix: trim the ID
+  let listing = await Listing.findById(id);
+  
+  if (!listing) {
+    return res.status(404).send("Listing not found");
+  }
+
+  let newReview = new Review(req.body.review);
+
+  listing.reviews.push(newReview);
+  await newReview.save();
+  await listing.save();
+
+  res.redirect(`/listings/${listing._id}`);
+}));
+
+// detele reviews  route
+app.delete("/listings/:id/reviews/:reviewId" , wrapAsync(async (req, res) => {
+  let { id, reviewId } = req.params; // fix: destructure params
+
+  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); // remove review from listing
+  await Review.findByIdAndDelete(reviewId); // delete the review from the database
+
+  // 
+  res.redirect(`/listings/${id}`); // redirect to the listing page
 
 
+
+
+}));
 
 // error handling middleware
 app.use((err, req, res, next)=>{
