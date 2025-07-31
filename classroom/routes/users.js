@@ -1,6 +1,6 @@
 
 const express = require("express");
-const router = ewxpress.Router();
+const router = express.Router();
 
 // users routes
 
