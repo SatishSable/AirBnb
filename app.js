@@ -11,6 +11,7 @@ const {listingSchema , reviewSchema} = require("./schema.js");
 const Review = require("./models/review.js");
 
 const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
 const MONGO_URL = "mongodb://127.0.0.1:27017/Wanderlust";
 
 // Middleware
@@ -42,58 +43,10 @@ app.get("/", (req, res) => {
   res.send("Hi, I am route");
 });
 
-const validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    let msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, msg);
-  } else {
-    next();
-  }
-}
 
-const validateReview = (req, res, next) => {
-  let { error } = reviewSchema.validate(req.body);
-  if (error) {
-    let msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, msg);
-  } else {
-    next();
-  }
-}
 app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews );
 
-app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => {
-  let id = req.params.id.trim(); // fix: trim the ID
-  let listing = await Listing.findById(id);
-  
-  if (!listing) {
-    return res.status(404).send("Listing not found");
-  }
-
-  let newReview = new Review(req.body.review);
-
-  listing.reviews.push(newReview);
-  await newReview.save();
-  await listing.save();
-
-  res.redirect(`/listings/${listing._id}`);
-}));
-
-// detele reviews  route
-app.delete("/listings/:id/reviews/:reviewId" , wrapAsync(async (req, res) => {
-  let { id, reviewId } = req.params; // fix: destructure params
-
-  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); // remove review from listing
-  await Review.findByIdAndDelete(reviewId); // delete the review from the database
-
-  // 
-  res.redirect(`/listings/${id}`); // redirect to the listing page
-
-
-
-
-}));
 
 // error handling middleware
 app.use((err, req, res, next)=>{
