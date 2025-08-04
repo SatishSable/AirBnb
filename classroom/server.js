@@ -21,13 +21,17 @@ app.use(flash());
 app.get("/register" , (req , res) => {
     let {name  = "Guest"} = req.query;
    req.session.name = name;
-  req.flash("info" , "user registered successfully");
-    res.redirect("/hello");
+ if(name == "Guest") {
+       req.flash("success", "Welcome to our website, Guest!");
+   } else {
+       req.flash("success", `Welcome to our website, ${name}!`);
+   }
 });
-app.get("/hello"  , (req ,res) =>{
-    
-   res.render("page.ejs" , {name : req.session.name , msg : req.flash("success") });
-})
+app.get("/hello"  , (req ,res) =>{ res.locals.message = req.flash("success");
+   res.render.message = req.flash("success");
+   res.render("page.ejs", {name: req.session.name});
+   
+});
 
 // app.get("/reqcount" , (req ,res ) => {
 //     if(req.session.count) {

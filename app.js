@@ -7,8 +7,8 @@ const methodOverride = require("method-override"); // fixed spelling
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema , reviewSchema} = require("./schema.js");
-const Review = require("./models/review.js");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 const listings = require("./routes/listing.js");
 const reviews = require("./routes/review.js");
@@ -38,11 +38,33 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
+// Session configuration
+const sessionOptions = {    
+  secret : "mysupersecretcode",
+  resave : false,
+  saveUninitialized : true,
+  cookie: {
+   expries: Date.now() + 7 * 24 * 60 *60 *1000,
+    maxAge: 7 * 24 * 60 *60 *1000,// 1 day
+    httpOnly: true, // prevents client-side JavaScript from accessing the cookie
+  },
+
+}
+
 // Home route
 app.get("/", (req, res) => {
   res.send("Hi, I am route");
 });
 
+app.use(session(sessionOptions));
+app.use(flash());
+
+
+app.use((req,res,next ) => {
+  res.locals.success = req.flash("success");
+ res.locals.error = req.flash("error");
+  next();
+})
 
 app.use("/listings", listings);
 app.use("/listings/:id/reviews", reviews );

@@ -34,6 +34,10 @@ router.get("/new", (req, res) => {
 router.get("/:id", wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id).populate("reviews");
+  if (!listing) {
+    req.flash( "error", "Listing not found");
+    res.redirect("/listings");
+  } 
   res.render("listings/show.ejs", { listing });
 }));
 
@@ -43,6 +47,7 @@ router.post("/", wrapAsync( async(req, res , next) => {
   console.log(result);
     const newListing = new Listing(req.body.listing);
   await newListing.save();
+  req.flash("success", "New listing created successfully!");
   res.redirect("/listings"); // fixed redirect path
   
   
@@ -53,6 +58,7 @@ router.post("/", wrapAsync( async(req, res , next) => {
 router.get("/:id/edit", wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
+  req.flash("success", "listing Edited successfully!");
   res.render("listings/edit.ejs", { listing });
 }));
 
@@ -61,6 +67,7 @@ router.put("/:id", wrapAsync(async (req, res) => {
   
   const { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+  req.flash("success", " listing Update successfully!");
   res.redirect("/listings");
 }));
 
@@ -69,6 +76,7 @@ router.delete("/:id" , wrapAsync(async(req ,res) => {
   const { id } = req.params;
  let deleteListing = await Listing.findByIdAndDelete(id);
  console.log(deleteListing);
+ req.flash("success", " listing Deleted successfully!");
  res.redirect("/listings");
 }));
 
