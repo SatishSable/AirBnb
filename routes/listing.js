@@ -38,12 +38,13 @@ router.get("/:id", wrapAsync(async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id).populate("reviews").populate("owner");
   if (!listing) {
-    req.flash( "error", "Listing not found");
-    res.redirect("/listings");
+    req.flash("error", "Listing not found");
+    return res.redirect("/listings");  // ✅ added return
   } 
   console.log(listing);
   res.render("listings/show.ejs", { listing });
 }));
+
 
 // Create route - post new listing
 router.post("/",  isLoggedIn,wrapAsync( async(req, res , next) => {
@@ -70,12 +71,17 @@ router.get("/:id/edit",  isLoggedIn, wrapAsync(async (req, res) => {
 
 // Update route - put updated listing
 router.put("/:id", isLoggedIn, wrapAsync(async (req, res) => {
-  
   const { id } = req.params;
+  let listing = await Listing.findById(id);
+  if (!listing.owner.equals(res.locals.currUser._id)) {
+    req.flash("error", "you don't have permission to edit");
+    return res.redirect(`/listings/${id}`);  // ✅ added return
+  }
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-  req.flash("success", " listing Update successfully!");
+  req.flash("success", "Listing updated successfully!");
   res.redirect("/listings");
 }));
+
 
 // delete route
 router.delete("/:id" ,isLoggedIn, wrapAsync(async(req ,res) => {
