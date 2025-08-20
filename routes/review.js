@@ -5,12 +5,13 @@ const ExpressError = require("../utils/ExpressError.js");
 
 const Review = require("../models/review.js");
 const Listing = require("../models/listing.js");
-const {validateReview} = require("../middleware.js")
+const {validateReview, isLoggedIn, isReviewAuthor} = require("../middleware.js")
 const mongoose = require("mongoose"); 
 
 
 router.post(
   "/",
+  isLoggedIn,
   validateReview,
   wrapAsync(async (req, res) => {
     const listingId = req.params.id.trim();
@@ -27,7 +28,9 @@ router.post(
     }
 
     const newReview = new Review(req.body.review);
+      newReview.author = req.user._id;
     listing.reviews.push(newReview);
+  console.log(newReview);
     await newReview.save();
     await listing.save();
     req.flash("success", "New Review created successfully!");
@@ -37,6 +40,8 @@ router.post(
 
 router.delete(
   "/:reviewId",
+  isLoggedIn,
+  isReviewAuthor,
   wrapAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
