@@ -35,17 +35,13 @@ module.exports.showListing = async (req, res) => {
 
 
 module.exports.createListing = async (req, res, next) => {
-  let result = listingSchema.validate(req.body);
-  console.log(result);
-
-  if (result.error) {
-    // If validation fails
-    req.flash("error", result.error.details.map(el => el.message).join(","));
-    return res.redirect("/listings/new"); 
-  }
-
+  let url = req.file.path;
+  let filename = req.file.filename;
+  console.log(url  , " " , filename);
+  
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id; // set owner
+  newListing.image = {url , filename};
   await newListing.save();
 
   req.flash("success", "New listing created successfully!");
@@ -62,10 +58,24 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateForm = async (req, res) => {
   const { id } = req.params;
-  await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+
+  // Update text fields (title, price, etc.)
+  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+
+  // ✅ Update image ONLY if a new file is uploaded
+  if (req.file) {
+    listing.image = {
+      url: req.file.path,
+      filename: req.file.filename,
+    };
+    await listing.save();
+  
+  }
+
   req.flash("success", "Listing updated successfully!");
   res.redirect(`/listings/${id}`);
-}
+};
+
 
 module.exports.deleteListing = async(req ,res) => {
   const { id } = req.params;
