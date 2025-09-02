@@ -16,8 +16,15 @@
     <textarea id="description" name="listing[description]" class="form-control" required><%= listing.description %></textarea>
     <div class="invalid-feedback">please enter a description</div>
    </div>
+   <div class="mb-3 ">
+    Original Image:<br>
+    <img src="<%= original.replace('/upload/', '/upload/w_350,h_300,c_fill,q_auto,f_auto/') %>" 
+     alt="Listing image" 
+     class="img-fluid rounded shadow-sm">
+
+   </div>
    <div class="mb-3">
-    <label for="image" class="form-label">Image URL:</label>
+    <label for="image" class="form-label">Upload New Image</label>
     <input type="file" id="image" name="listing[image]" class="form-control" value="<%= listing.image.url %>">
     <div class="invalid-feedback">please enter a url</div>
    </div>

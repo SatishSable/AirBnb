@@ -53,7 +53,10 @@ module.exports.renderEditForm = async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
   req.flash("success", "listing Edited successfully!");
-  res.render("listings/edit.ejs", { listing });
+
+  let original = listing.image.url;
+  original =  original.replace("/uploads/", "/upload/h_300/");
+  res.render("listings/edit.ejs", { listing , original });
 }
 
 module.exports.updateForm = async (req, res) => {
