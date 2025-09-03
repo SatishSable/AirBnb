@@ -37,24 +37,33 @@ module.exports.showListing = async (req, res) => {
 
 
 module.exports.createListing = async (req, res, next) => {
+  // 🔹 Geocode location with Mapbox
+  let response = await geocodingClient.forwardGeocode({
+    query: req.body.listing.location,
+    limit: 1,
+  }).send();
 
- let responce =  await geocodingClient.forwardGeocode({
-  query: req.body.listing.location,
-  limit: 1,
-})
-  .send()
-
-  console.log(responce.body.features[0].geometry);
-  res.send("done!");
-
+  // 🔹 Image upload info
   let url = req.file.path;
   let filename = req.file.filename;
-  console.log(url  , " " , filename);
-  
+
+  // 🔹 Create new listing
   const newListing = new Listing(req.body.listing);
-  newListing.owner = req.user._id; // set owner
-  newListing.image = {url , filename};
-  await newListing.save();
+  newListing.owner = req.user._id;
+  newListing.image = { url, filename };
+
+  // 🔹 Always set geometry (fallback if no result)
+  if (response.body.features.length > 0) {
+    newListing.geometry = response.body.features[0].geometry;
+  } else {
+    newListing.geometry = {
+      type: "Point",
+      coordinates: [0, 0], // fallback default
+    };
+  }
+
+  let saved = await newListing.save();
+  console.log("✅ Saved Listing:", saved);
 
   req.flash("success", "New listing created successfully!");
   res.redirect("/listings");
