@@ -62,9 +62,9 @@ const sessionOptions = {
 }
 
 // Home route
-app.get("/", (req, res) => {
-  res.send("Hi, I am route");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hi, I am route");
+// });
 
 
 
