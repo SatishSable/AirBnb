@@ -1,0 +1,457 @@
+<% layout("layouts/boilerplate")%>
+
+    <style>
+        /* Hero Section */
+        .dhabas-hero {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #CD853F 100%);
+            padding: 4rem 2rem;
+            margin: -1.5rem -0.75rem 2rem -0.75rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dhabas-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920') center/cover;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .dhabas-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .dhabas-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dhabas-hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-btn.primary {
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+        }
+
+        .hero-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 56, 92, 0.4);
+            color: white;
+        }
+
+        .hero-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-btn.secondary:hover {
+            background: white;
+            color: #8B4513;
+        }
+
+        /* Page Content */
+        .dhabas-page {
+            padding: 2rem 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .dhabas-count {
+            color: #717171;
+            font-size: 0.95rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.6rem 1.25rem;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #222;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: linear-gradient(135deg, #D2691E, #8B4513);
+            color: white;
+            border-color: #D2691E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(210, 105, 30, 0.25);
+        }
+
+        .filter-tab i {
+            margin-right: 0.5rem;
+        }
+
+        /* Dhabas Grid */
+        .dhabas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dhaba-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dhaba-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .dhaba-card:hover .dhaba-img img {
+            transform: scale(1.08);
+        }
+
+        .dhaba-img {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .dhaba-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .dhaba-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: white;
+            padding: 0.35rem 0.9rem;
+            border-radius: 25px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .dhaba-badge i {
+            color: #D2691E;
+        }
+
+        .verified-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #00A699, #008B7D);
+            color: white;
+            padding: 0.35rem 0.9rem;
+            border-radius: 25px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .dhaba-body {
+            padding: 1.25rem;
+        }
+
+        .dhaba-location {
+            color: #717171;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .dhaba-title {
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+            color: #222;
+            line-height: 1.3;
+        }
+
+        .dhaba-description {
+            color: #717171;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .dhaba-cuisine {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .cuisine-tag {
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: #8B4513;
+            font-weight: 500;
+        }
+
+        .dhaba-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dhaba-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-range {
+            font-weight: 700;
+            color: #00A699;
+            font-size: 1.1rem;
+        }
+
+        .timings {
+            color: #717171;
+            font-size: 0.75rem;
+        }
+
+        .dhaba-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #fff5eb 0%, #ffe8d6 100%);
+            border-radius: 20px;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #D2691E;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #555;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            color: #717171;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dhabas-hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .dhabas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <!-- Hero Section -->
+    <section class="dhabas-hero">
+        <div class="dhabas-hero-content">
+            <h1>Taste the Tradition</h1>
+            <p>Discover authentic local flavors, hidden gems, and the best dhabas near you.</p>
+            <div class="hero-buttons">
+                <a href="/dhabas/new" class="hero-btn primary">
+                    <i class="fas fa-plus"></i> List Your Dhaba
+                </a>
+                <a href="/map?type=dhabas" class="hero-btn secondary">
+                    <i class="fas fa-map-marker-alt"></i> Map View
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="dhabas-page">
+        <!-- Section Header -->
+        <div class="section-header">
+            <div>
+                <h2>Trending Dhabas</h2>
+                <p class="dhabas-count">
+                    <% if(dhabas && dhabas.length> 0) { %>
+                        <%= dhabas.length %> Dhabas Found
+                            <% } else { %>
+                                No dhabas found
+                                <% } %>
+                </p>
+            </div>
+            <div class="filter-tabs">
+                <a href="/dhabas" class="filter-tab <%= !query || query === '' ? 'active' : '' %>">
+                    <i class="fas fa-th"></i> All
+                </a>
+                <a href="/dhabas?category=Dhaba" class="filter-tab <%= query === 'Dhaba' ? 'active' : '' %>">
+                    <i class="fas fa-store"></i> Dhabas
+                </a>
+                <a href="/dhabas?category=Restaurant" class="filter-tab <%= query === 'Restaurant' ? 'active' : '' %>">
+                    <i class="fas fa-utensils"></i> Restaurants
+                </a>
+                <a href="/dhabas?category=Street Food"
+                    class="filter-tab <%= query === 'Street Food' ? 'active' : '' %>">
+                    <i class="fas fa-hamburger"></i> Street Food
+                </a>
+                <a href="/dhabas?category=Tea Stall" class="filter-tab <%= query === 'Tea Stall' ? 'active' : '' %>">
+                    <i class="fas fa-mug-hot"></i> Tea Stalls
+                </a>
+            </div>
+        </div>
+
+        <!-- Dhabas Grid -->
+        <div class="dhabas-grid">
+            <% if(dhabas && dhabas.length> 0) { %>
+                <% dhabas.forEach(dhaba=> { %>
+                    <a href="/dhabas/<%= dhaba._id %>" class="dhaba-card">
+                        <div class="dhaba-img">
+                            <img src="<%= dhaba.image && dhaba.image.url ? dhaba.image.url : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600' %>"
+                                alt="<%= dhaba.title %>">
+                            <span class="dhaba-badge">
+                                <i class="fas fa-utensils"></i>
+                                <%= dhaba.category || 'Dhaba' %>
+                            </span>
+                            <% if(dhaba.verified) { %>
+                                <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>
+                                <% } %>
+                        </div>
+                        <div class="dhaba-body">
+                            <p class="dhaba-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <%= dhaba.location %>
+                            </p>
+                            <h3 class="dhaba-title">
+                                <%= dhaba.title %>
+                            </h3>
+                            <p class="dhaba-description">
+                                Authentic <%= dhaba.category || 'Dhaba' %> experience with traditional flavors.
+                            </p>
+                            <div class="dhaba-cuisine">
+                                <% if(dhaba.cuisine && dhaba.cuisine.length> 0) { %>
+                                    <% dhaba.cuisine.slice(0,3).forEach(c=> { %>
+                                        <span class="cuisine-tag">
+                                            <%= c %>
+                                        </span>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <span class="cuisine-tag">Multi-Cuisine</span>
+                                                <% } %>
+                            </div>
+                            <div class="dhaba-footer">
+                                <div class="dhaba-meta">
+                                    <span class="price-range">
+                                        <%= dhaba.priceRange || '₹₹' %>
+                                    </span>
+                                    <span class="timings">
+                                        <i class="far fa-clock"></i>
+                                        <%= dhaba.timings ? dhaba.timings.open + ' - ' + dhaba.timings.close
+                                            : '6 AM - 11 PM' %>
+                                    </span>
+                                </div>
+                                <div class="dhaba-rating">
+                                    <i class="fas fa-star"></i>
+                                    <%= dhaba.rating || '4.5' %>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-utensils"></i>
+                                <h3>No dhabas listed yet</h3>
+                                <p>Know a great local eatery? List it now and help travelers discover hidden gems!</p>
+                                <a href="/dhabas/new" class="hero-btn primary">
+                                    <i class="fas fa-plus"></i> List a Dhaba
+                                </a>
+                            </div>
+                            <% } %>
+        </div>
+    </div>

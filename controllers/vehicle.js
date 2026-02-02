@@ -1,0 +1,91 @@
+const Vehicle = require("../models/vehicle.js");
+const mapBoxToken = process.env.Map_Token;
+
+module.exports.index = async (req, res) => {
+    const { type, location } = req.query;
+    let query = {};
+
+    if (type && type !== 'all') {
+        query.vehicleType = type;
+    }
+
+    if (location) {
+        query.location = { $regex: location, $options: 'i' };
+    }
+
+    const vehicles = await Vehicle.find(query).populate("owner");
+    res.render("vehicles/index.ejs", { vehicles, query: type || '' });
+};
+
+module.exports.showVehicle = async (req, res) => {
+    const { id } = req.params;
+    const vehicle = await Vehicle.findById(id).populate("owner");
+
+    if (!vehicle) {
+        req.flash("error", "Vehicle not found");
+        return res.redirect("/vehicles");
+    }
+
+    res.render("vehicles/show.ejs", { vehicle, mapBoxToken: process.env.Map_Token });
+};
+
+module.exports.renderNewForm = (req, res) => {
+    res.render("vehicles/new.ejs");
+};
+
+module.exports.createVehicle = async (req, res) => {
+    const newVehicle = new Vehicle(req.body.vehicle);
+    newVehicle.owner = req.user._id;
+
+    if (req.file) {
+        newVehicle.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+
+    // Default geometry if not provided
+    newVehicle.geometry = {
+        type: "Point",
+        coordinates: [77.5946, 12.9716] // Default Bangalore
+    };
+
+    await newVehicle.save();
+    req.flash("success", "Vehicle listed successfully!");
+    res.redirect("/vehicles");
+};
+
+module.exports.renderEditForm = async (req, res) => {
+    const { id } = req.params;
+    const vehicle = await Vehicle.findById(id);
+
+    if (!vehicle) {
+        req.flash("error", "Vehicle not found");
+        return res.redirect("/vehicles");
+    }
+
+    res.render("vehicles/edit.ejs", { vehicle });
+};
+
+module.exports.updateVehicle = async (req, res) => {
+    const { id } = req.params;
+    const vehicle = await Vehicle.findByIdAndUpdate(id, { ...req.body.vehicle });
+
+    if (req.file) {
+        vehicle.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+        await vehicle.save();
+    }
+
+    req.flash("success", "Vehicle updated successfully!");
+    res.redirect(`/vehicles/${id}`);
+};
+
+module.exports.deleteVehicle = async (req, res) => {
+    const { id } = req.params;
+    await Vehicle.findByIdAndDelete(id);
+    req.flash("success", "Vehicle deleted successfully!");
+    res.redirect("/vehicles");
+};

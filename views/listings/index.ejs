@@ -1,119 +1,427 @@
 <% layout("layouts/boilerplate")%>
 
-<style>
-  #filters {
-   display: flex;
-   flex-wrap: wrap;
-  }
-  .filter {
-    text-align: center;
-    margin-right: 1.5rem;
-    margin-top: 0.7rem;
-    opacity: 0.8;
-  }
-
-  .filter:hover {
-    opacity: 1;
-    cursor: pointer;    
-  }
-  .filter p {
-    font-size: 0.5rem;
-  }
-
-  .tax-info {
-    display: none;
-  }
-  .tax-toggle{
-    border : 1px solid black;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    align-items: center;
-    height: 3rem;
-    text-align: center;
-  }
-</style>
-<div id="filters" class="d-flex flex-wrap justify-content-center gap-4 mt-3">
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-fire"></i></div>
-    <p>Trending</p>
-  </div>
-
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-bed"></i></div>
-    <p>Room</p>
-  </div>
-
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-mountain-city"></i></div>
-    <p>Iconic Cities</p>
-  </div>
-
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-mountain"></i></div>
-    <p>Mountains</p>
-  </div>
-
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-chess-rook"></i></div>
-    <p>Castles</p>
-  </div>
-
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-water-ladder"></i></div>
-    <p>Amazing Pool</p>
-  </div>
-
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-campground"></i></div>
-    <p>Camping</p>
-  </div>
-
-  <div class="filter text-center">
-    <div><i class="fa-solid fa-tractor"></i></div>
-    <p>Farms</p>
-  </div>
-  <div class="tax-toggle">
-    <div class="form-check-reverse form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-  <label class="form-check-label" for="switchCheckDefault">Display total after Taxes</label>
-</div>
-
-  </div>
-</div>
-
-   <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 px-0 " >
-    <%for(let listing of allListings ) {%>
-      <a href="/listings/<%= listing._id%>" class="listing-link" style="text-decoration: none; color: inherit;">
-    <div class="card col listing-card" style="width: 20rem;">
-  <img src="<%= listing.image.url %>" 
-       class="card-img-top" 
-       alt="listing_image"
-       style="height: 20rem;">
-     <div class="card-img-overlay"></div>
-  <div class="card-body">
-    <p class="card-text">
-     <b> <%= listing.title %> </b><br>
-     ₹ <%= listing.price.toLocaleString("en-IN")  %> / night
-     <i class="tax-info">&nbsp; &nbsp;+ 18% GST</i>
-    </p>
-    <br>
-    
-  </div>
-</div>
-</a>
-<%}%>
-   </div>
-
-<script>
-  let taxToggle = document.getElementById('switchCheckDefault');
-  taxToggle.addEventListener('click', function() {
-   let taxInfo = document.getElementsByClassName('tax-info');
-   for(info of taxInfo) {
-    if(taxToggle.checked) {
-      info.style.display = 'inline';
-    } else {
-      info.style.display = 'none';
+  <style>
+    /* Additional page-specific styles */
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 0;
+      margin: -2rem -2rem 2rem -2rem;
+      text-align: center;
+      border-radius: 0 0 24px 24px;
     }
-   }
-  })
-</script>
+
+    .hero-section h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero-section p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+    }
+
+    .search-section {
+      max-width: 800px;
+      margin: -2rem auto 2rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+    }
+
+    .search-inputs {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .search-input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-input-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 0.25rem;
+    }
+
+    .search-input-group input,
+    .search-input-group select {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+
+    .search-btn {
+      background: linear-gradient(to right, #FF385C, #FF5A5F);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 56, 92, 0.3);
+    }
+
+    .listings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .listings-count {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .sort-options select {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 768px) {
+      .search-inputs {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-section h1 {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <h1>Find the Perfect Home</h1>
+    <p>Rent from local hosts and discover unique stays for your dream vacation.</p>
+  </div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <form action="/listings/search" method="GET">
+      <div class="search-inputs">
+        <div class="search-input-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" placeholder="Where are you going?" class="form-control">
+        </div>
+
+        <div class="search-input-group">
+          <label for="checkIn">Check in</label>
+          <input type="date" id="checkIn" name="checkIn" class="form-control">
+        </div>
+
+        <div class="search-input-group">
+          <label for="guests">Guests</label>
+          <select id="guests" name="guests" class="form-control">
+            <option value="1">1 guest</option>
+            <option value="2">2 guests</option>
+            <option value="3">3 guests</option>
+            <option value="4">4 guests</option>
+            <option value="5">5+ guests</option>
+          </select>
+        </div>
+
+        <button type="submit" class="search-btn">
+          <i class="fas fa-search"></i> Search
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filters -->
+  <div id="filters" class="d-flex gap-4 mt-3">
+    <div class="filter" data-category="all">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>All</p>
+    </div>
+
+    <div class="filter" data-category="Trending">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+
+    <div class="filter" data-category="Rooms">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+
+    <div class="filter" data-category="Iconic Cities">
+      <div><i class="fa-solid fa-mountain-city"></i></div>
+      <p>Iconic Cities</p>
+    </div>
+
+    <div class="filter" data-category="Mountains">
+      <div><i class="fa-solid fa-mountain"></i></div>
+      <p>Mountains</p>
+    </div>
+
+    <div class="filter" data-category="Castles">
+      <div><i class="fa-solid fa-chess-rook"></i></div>
+      <p>Castles</p>
+    </div>
+
+    <div class="filter" data-category="Amazing Pools">
+      <div><i class="fa-solid fa-water-ladder"></i></div>
+      <p>Amazing Pools</p>
+    </div>
+
+    <div class="filter" data-category="Camping">
+      <div><i class="fa-solid fa-campground"></i></div>
+      <p>Camping</p>
+    </div>
+
+    <div class="filter" data-category="Farms">
+      <div><i class="fa-solid fa-tractor"></i></div>
+      <p>Farms</p>
+    </div>
+
+    <div class="filter" data-category="Beach">
+      <div><i class="fa-solid fa-umbrella-beach"></i></div>
+      <p>Beach</p>
+    </div>
+
+    <div class="filter" data-category="Lakefront">
+      <div><i class="fa-solid fa-water"></i></div>
+      <p>Lakefront</p>
+    </div>
+
+    <div class="filter" data-category="Treehouses">
+      <div><i class="fa-solid fa-tree"></i></div>
+      <p>Treehouses</p>
+    </div>
+
+    <div class="tax-toggle">
+      <div class="form-check-reverse form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+        <label class="form-check-label" for="switchCheckDefault">Display total after Taxes</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Listings Header -->
+  <div class="listings-header">
+    <div class="listings-count">
+      <span id="listingsCount">
+        <%= allListings.length %>
+      </span> Properties Found
+    </div>
+    <div class="sort-options">
+      <label for="sortBy">Sort by:</label>
+      <select id="sortBy" class="form-select">
+        <option value="recommended">Recommended</option>
+        <option value="priceLow">Price: Low to High</option>
+        <option value="priceHigh">Price: High to Low</option>
+        <option value="rating">Highest Rated</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Listings Grid -->
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 row-cols-1 mt-3 px-0" id="listingsGrid">
+    <% for(let listing of allListings) { %>
+      <a href="/listings/<%= listing._id%>" class="listing-link" style="text-decoration: none; color: inherit;">
+        <div class="card col listing-card" style="width: 100%; max-width: 20rem;"
+          data-category="<%= listing.category || 'Trending' %>">
+          <!-- Wishlist Button -->
+          <button class="wishlist-btn" onclick="event.preventDefault(); toggleWishlist('<%= listing._id %>')">
+            <i class="far fa-heart"></i>
+          </button>
+
+          <img
+            src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500' %>"
+            class="card-img-top" alt="<%= listing.title %>" style="height: 280px;">
+
+          <div class="card-img-overlay"></div>
+
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="mb-0">
+                <%= listing.title %>
+              </h5>
+              <% if(listing.reviews && listing.reviews.length> 0) { %>
+                <span class="rating-badge">
+                  <i class="fas fa-star"></i>
+                  <span>4.8</span>
+                </span>
+                <% } %>
+            </div>
+
+            <p class="card-text text-muted mb-1">
+              <%= listing.location %>, <%= listing.country %>
+            </p>
+
+            <% if(listing.guests || listing.bedrooms || listing.beds) { %>
+              <p class="card-text text-muted small mb-2">
+                <% if(listing.guests) { %>
+                  <%= listing.guests %> guests · <% } %>
+                      <% if(listing.bedrooms) { %>
+                        <%= listing.bedrooms %> bedrooms · <% } %>
+                            <% if(listing.beds) { %>
+                              <%= listing.beds %> beds<% } %>
+              </p>
+              <% } %>
+
+                <p class="card-text">
+                  <span class="price">₹<%= listing.price.toLocaleString("en-IN") %></span> / night
+                  <i class="tax-info">&nbsp; &nbsp;+ 18% GST</i>
+                </p>
+          </div>
+        </div>
+      </a>
+      <% } %>
+  </div>
+
+  <script>
+    // Tax Toggle
+    let taxToggle = document.getElementById('switchCheckDefault');
+    taxToggle.addEventListener('click', function () {
+      let taxInfo = document.getElementsByClassName('tax-info');
+      for (info of taxInfo) {
+        if (taxToggle.checked) {
+          info.style.display = 'inline';
+        } else {
+          info.style.display = 'none';
+        }
+      }
+    });
+
+    // Filter Functionality
+    const filters = document.querySelectorAll('.filter');
+    const listingCards = document.querySelectorAll('.listing-card');
+
+    filters.forEach(filter => {
+      filter.addEventListener('click', function () {
+        // Remove active class from all filters
+        filters.forEach(f => f.classList.remove('active'));
+
+        // Add active class to clicked filter
+        this.classList.add('active');
+
+        const category = this.getAttribute('data-category');
+        let visibleCount = 0;
+
+        listingCards.forEach(card => {
+          const cardCategory = card.getAttribute('data-category');
+
+          if (category === 'all' || cardCategory === category) {
+            card.parentElement.style.display = 'block';
+            visibleCount++;
+          } else {
+            card.parentElement.style.display = 'none';
+          }
+        });
+
+        // Update count
+        document.getElementById('listingsCount').textContent = visibleCount;
+      });
+    });
+
+    // Sort Functionality
+    const sortSelect = document.getElementById('sortBy');
+    const listingsGrid = document.getElementById('listingsGrid');
+
+    sortSelect.addEventListener('change', function () {
+      const sortBy = this.value;
+      const listings = Array.from(listingCards).map(card => card.parentElement);
+
+      listings.sort((a, b) => {
+        const priceA = parseInt(a.querySelector('.price').textContent.replace(/[₹,]/g, ''));
+        const priceB = parseInt(b.querySelector('.price').textContent.replace(/[₹,]/g, ''));
+
+        switch (sortBy) {
+          case 'priceLow':
+            return priceA - priceB;
+          case 'priceHigh':
+            return priceB - priceA;
+          case 'rating':
+            // For now, just shuffle
+            return Math.random() - 0.5;
+          default:
+            return 0;
+        }
+      });
+
+      // Re-append sorted listings
+      listings.forEach(listing => {
+        listingsGrid.appendChild(listing);
+      });
+    });
+
+    // Wishlist Functionality
+    function toggleWishlist(listingId) {
+      const btn = event.currentTarget;
+      const icon = btn.querySelector('i');
+
+      if (icon.classList.contains('far')) {
+        icon.classList.remove('far');
+        icon.classList.add('fas');
+        btn.classList.add('active');
+
+        // Save to localStorage
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        if (!wishlist.includes(listingId)) {
+          wishlist.push(listingId);
+          localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+      } else {
+        icon.classList.remove('fas');
+        icon.classList.add('far');
+        btn.classList.remove('active');
+
+        // Remove from localStorage
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        wishlist = wishlist.filter(id => id !== listingId);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      }
+    }
+
+    // Load wishlist on page load
+    document.addEventListener('DOMContentLoaded', function () {
+      const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+      wishlist.forEach(listingId => {
+        const card = document.querySelector(`[data-category] a[href="/listings/${listingId}"]`);
+        if (card) {
+          const btn = card.querySelector('.wishlist-btn');
+          const icon = btn.querySelector('i');
+          icon.classList.remove('far');
+          icon.classList.add('fas');
+          btn.classList.add('active');
+        }
+      });
+    });
+
+    // Add fade-in animation to cards
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in');
+        }
+      });
+    });
+
+    listingCards.forEach(card => {
+      observer.observe(card);
+    });
+  </script>

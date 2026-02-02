@@ -1,50 +1,235 @@
 <style>
-  .btn-search {
-    background-color: #fe424d;
-    color: white;
-    border-radius: 25px;
-    padding: 0 1rem 0 1rem 0;
+  .navbar {
+    background-color: white;
+    border-bottom: 1px solid #ebebeb;
+    padding: 1rem 2rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   }
-  .btn-search:hover {
-    background-color: #fe424d;
-    color: white;
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FF385C !important;
+    text-decoration: none;
+    transition: transform 0.3s ease;
   }
-  .btn-search i {
-    display: inline;
-    margin-right: 0.5rem;
+
+  .navbar-brand:hover {
+    transform: scale(1.05);
+  }
+
+  .navbar-brand .brand-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #FF385C;
+  }
+
+  .search-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    background: white;
+    max-width: 500px;
+  }
+
+  .search-container:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .search-container input {
+    border: none;
+    outline: none;
+    font-size: 0.875rem;
+    flex: 1;
+  }
+
+  .search-btn {
+    background: linear-gradient(to right, #FF385C, #FF5A5F);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .search-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 56, 92, 0.3);
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav-link {
+    color: #222 !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: 40px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .nav-link:hover {
+    background-color: #f7f7f7;
+  }
+
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .user-menu:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .dropdown-menu {
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border: 1px solid #ebebeb;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+  }
+
+  .dropdown-item {
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f7f7f7;
+  }
+
+  @media (max-width: 768px) {
+    .search-container {
+      display: none;
+    }
+
+    .navbar {
+      padding: 1rem;
+    }
   }
 </style>
 
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+<nav class="navbar navbar-expand-lg sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-brands fa-airbnb"></i></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"></button>
-      
-    
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        
-        <a class="nav-link" href="/listings">Explore</a>
-       
+    <!-- Brand -->
+    <a class="navbar-brand" href="/">
+      <i class="fa-brands fa-airbnb"></i>
+      <span class="brand-text d-none d-md-inline">wanderlust</span>
+    </a>
 
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- Center Search -->
+      <div class="mx-auto d-none d-lg-flex">
+        <form class="search-container" action="/listings/search" method="GET">
+          <input type="text" name="location" placeholder="Search destinations" />
+          <button class="search-btn" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </form>
       </div>
-      <div class="navbar-nav mx-auto">
-        <form class="d-flex" role="search">
-      <input class="form-control me-2" type="search" placeholder="Search destinations"/>
-      <button class="btn btn-search" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-    </form>
+
+      <!-- Right Menu -->
+      <div class="ms-auto">
+        <div class="nav-menu">
+          <a class="nav-link" href="/listings">Stays</a>
+          <a class="nav-link" href="/vehicles">Vehicles</a>
+          <a class="nav-link" href="/dhabas">Dhabas</a>
+          <a class="nav-link" href="/listings/new"><b>List Property</b></a>
+
+          <% if (!currUser) { %>
+            <!-- Guest Menu -->
+            <div class="dropdown">
+              <div class="user-menu" data-bs-toggle="dropdown">
+                <i class="fas fa-bars"></i>
+                <div class="user-avatar">
+                  <i class="fas fa-user"></i>
+                </div>
+              </div>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/signup"><b>Sign up</b></a></li>
+                <li><a class="dropdown-item" href="/login">Log in</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="/listings/new">Airbnb your home</a></li>
+                <li><a class="dropdown-item" href="#">Help Center</a></li>
+              </ul>
+            </div>
+            <% } else { %>
+              <!-- Logged In User Menu -->
+              <div class="dropdown">
+                <div class="user-menu" data-bs-toggle="dropdown">
+                  <i class="fas fa-bars"></i>
+                  <div class="user-avatar">
+                    <%= currUser.username.charAt(0).toUpperCase() %>
+                  </div>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="#"><b>Welcome, <%= currUser.username %>!</b></a></li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                  <li><a class="dropdown-item" href="#"><i class="fas fa-heart me-2"></i>Wishlists</a></li>
+                  <li><a class="dropdown-item" href="#"><i class="fas fa-suitcase me-2"></i>Trips</a></li>
+                  <li><a class="dropdown-item" href="/listings/new"><i class="fas fa-home me-2"></i>List your
+                      property</a></li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Account settings</a></li>
+                  <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help Center</a></li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Log out</a></li>
+                </ul>
+              </div>
+              <% } %>
+        </div>
       </div>
-      <div class="navbar-nav ms-auto">
-         <a class="nav-link" href="/listings/new"><b>Airbnb your home</b></a>
-    <% if (!currUser) { %>
-        <a class="nav-link" href="/signup"><b>SignUp</b></a>
-        <a class="nav-link" href="/login"><b>Login</b></a>
-    <% } %>
-    
-    <% if (currUser) { %>
-        <a class="nav-link" href="/logout"><b>Log out</b></a>
-    <% } %>
-</div>
     </div>
   </div>
 </nav>

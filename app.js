@@ -1,6 +1,5 @@
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+// Load environment variables
+require("dotenv").config();
 
 const express = require("express");
 const app = express();
@@ -14,6 +13,8 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
 const Listing = require("./models/listing.js");
+const Vehicle = require("./models/vehicle.js");
+const Dhaba = require("./models/dhaba.js");
 const User = require("./models/user.js");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
@@ -21,6 +22,9 @@ const ExpressError = require("./utils/ExpressError.js");
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+const bookingRouter = require("./routes/booking.js");
+const vehicleRouter = require("./routes/vehicle.js");
+const dhabaRouter = require("./routes/dhaba.js");
 
 // MongoDB connection
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/Wanderlust";
@@ -36,6 +40,15 @@ main()
     console.error("❌ MongoDB connection error:", err);
   });
 
+// Security middleware
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -47,8 +60,23 @@ app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Session configuration
+const MongoStore = require("connect-mongo");
+
+// Session configuration with MongoDB store
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SESSION_SECRET || "mysupersecretcode"
+  },
+  touchAfter: 24 * 60 * 60 // lazy session update (in seconds)
+});
+
+store.on("error", function (e) {
+  console.log("SESSION STORE ERROR", e);
+});
+
 const sessionOptions = {
+  store,
   secret: process.env.SESSION_SECRET || "mysupersecretcode",
   resave: false,
   saveUninitialized: true,
@@ -78,10 +106,21 @@ app.use((req, res, next) => {
   next();
 });
 
+// Home page route
+app.get("/", wrapAsync(async (req, res) => {
+  const allListings = await Listing.find({}).limit(8);
+  const allVehicles = await Vehicle.find({}).limit(4);
+  const allDhabas = await Dhaba.find({}).limit(4);
+  res.render("home.ejs", { allListings, allVehicles, allDhabas });
+}));
+
 // Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
+app.use("/", bookingRouter);
+app.use("/vehicles", vehicleRouter);
+app.use("/dhabas", dhabaRouter);
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -92,5 +131,5 @@ app.use((err, req, res, next) => {
 // Start server (Render/Heroku needs process.env.PORT)
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

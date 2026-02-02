@@ -1,0 +1,367 @@
+<% layout("layouts/boilerplate")%>
+
+    <style>
+        .vehicle-show {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .vehicle-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .vehicle-image {
+            border-radius: 16px;
+            overflow: hidden;
+            height: 400px;
+        }
+
+        .vehicle-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .vehicle-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .vehicle-location {
+            color: #717171;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .vehicle-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f7f7f7;
+            border-radius: 12px;
+        }
+
+        .spec-item i {
+            font-size: 1.5rem;
+            color: #FF385C;
+        }
+
+        .spec-item div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spec-item span:first-child {
+            font-size: 0.75rem;
+            color: #717171;
+        }
+
+        .spec-item span:last-child {
+            font-weight: 600;
+        }
+
+        .vehicle-price-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 1.5rem;
+        }
+
+        .price-display {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .price-display small {
+            font-size: 1rem;
+            color: #717171;
+            font-weight: 400;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 56, 92, 0.3);
+        }
+
+        .vehicle-description {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #ebebeb;
+        }
+
+        .vehicle-description h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .vehicle-features {
+            margin-top: 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .feature-tag i {
+            color: #00A699;
+        }
+
+        @media (max-width: 768px) {
+            .vehicle-header {
+                grid-template-columns: 1fr;
+            }
+
+            .vehicle-image {
+                height: 300px;
+            }
+        }
+    </style>
+
+    <div class="vehicle-show">
+        <a href="/vehicles"
+            style="color: #FF385C; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <i class="fas fa-arrow-left"></i> Back to Vehicles
+        </a>
+
+        <div class="vehicle-header">
+            <div class="vehicle-image">
+                <img src="<%= vehicle.image && vehicle.image.url ? vehicle.image.url : 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800' %>"
+                    alt="<%= vehicle.title %>">
+            </div>
+
+            <div class="vehicle-info">
+                <span
+                    style="background: #f0f0f0; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; text-transform: capitalize;">
+                    <%= vehicle.vehicleType %>
+                </span>
+                <h1>
+                    <%= vehicle.title %>
+                </h1>
+                <p class="vehicle-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <%= vehicle.location %>
+                </p>
+
+                <div class="vehicle-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-gas-pump"></i>
+                        <div>
+                            <span>Fuel Type</span>
+                            <span>
+                                <%= vehicle.fuelType || 'Petrol' %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-cog"></i>
+                        <div>
+                            <span>Transmission</span>
+                            <span>
+                                <%= vehicle.transmission || 'Manual' %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <span>Seats</span>
+                            <span>
+                                <%= vehicle.seats || 2 %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <span>Year</span>
+                            <span>
+                                <%= vehicle.year || 'N/A' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vehicle-price-card">
+                    <div class="price-display">
+                        ₹<%= vehicle.pricePerDay.toLocaleString("en-IN") %> <small>/ day</small>
+                    </div>
+                    <% if(currUser) { %>
+                        <form action="/vehicles/<%= vehicle._id %>/book" method="POST">
+                            <div
+                                style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+                                <div>
+                                    <label
+                                        style="font-size: 0.75rem; color: #717171; display: block; margin-bottom: 0.25rem;">PICK-UP</label>
+                                    <input type="date" name="checkIn" required
+                                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;"
+                                        min="<%= new Date().toISOString().split('T')[0] %>">
+                                </div>
+                                <div>
+                                    <label
+                                        style="font-size: 0.75rem; color: #717171; display: block; margin-bottom: 0.25rem;">DROP-OFF</label>
+                                    <input type="date" name="checkOut" required
+                                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px;"
+                                        min="<%= new Date().toISOString().split('T')[0] %>">
+                                </div>
+                            </div>
+                            <button type="submit" class="book-btn">
+                                <i class="fas fa-bolt"></i> Book Now
+                            </button>
+                        </form>
+                        <% } else { %>
+                            <a href="/login" class="book-btn"
+                                style="display: block; text-align: center; text-decoration: none;">
+                                Login to Book
+                            </a>
+                            <% } %>
+                </div>
+            </div>
+        </div>
+
+        <% if(vehicle.description) { %>
+            <div class="vehicle-description">
+                <h2>About this Vehicle</h2>
+                <p>
+                    <%= vehicle.description %>
+                </p>
+            </div>
+            <% } %>
+
+                <% if(vehicle.features && vehicle.features.length> 0) { %>
+                    <div class="vehicle-features">
+                        <h2>Features Included</h2>
+                        <div class="features-grid">
+                            <% vehicle.features.forEach(feature=> { %>
+                                <div class="feature-tag">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>
+                                        <%= feature %>
+                                    </span>
+                                </div>
+                                <% }); %>
+                        </div>
+                    </div>
+                    <% } %>
+
+                        <% if(vehicle.owner) { %>
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: #f7f7f7; border-radius: 16px;">
+                                <h3 style="margin-bottom: 1rem;">Listed by</h3>
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div
+                                        style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.25rem;">
+                                        <%= vehicle.owner.username.charAt(0).toUpperCase() %>
+                                    </div>
+                                    <div>
+                                        <p style="font-weight: 600; margin: 0;">
+                                            <%= vehicle.owner.username %>
+                                        </p>
+                                        <p style="color: #717171; font-size: 0.875rem; margin: 0;">Vehicle Owner</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+
+                                <!-- Map Section -->
+                                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #ebebeb;">
+                                    <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Pickup
+                                        Location</h2>
+                                    <p style="color: #717171; margin-bottom: 1rem;">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <%= vehicle.location %>
+                                    </p>
+                                    <div id="map" style="height: 350px; border-radius: 16px; overflow: hidden;"></div>
+                                </div>
+    </div>
+
+    <script>
+        const maptoken = "<%= mapBoxToken || '' %>";
+        const vehicle = <% - JSON.stringify(vehicle) %>;
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) return;
+
+            if (!maptoken) {
+                mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Map unavailable - Token not configured</p>';
+                return;
+            }
+
+            if (!vehicle.geometry || !vehicle.geometry.coordinates) {
+                mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Location not available for this vehicle</p>';
+                return;
+            }
+
+            try {
+                mapboxgl.accessToken = maptoken;
+                const [lng, lat] = vehicle.geometry.coordinates;
+
+                const map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v12',
+                    center: [lng, lat],
+                    zoom: 13
+                });
+
+                map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+                new mapboxgl.Marker({ color: '#1a1a2e' })
+                    .setLngLat([lng, lat])
+                    .setPopup(
+                        new mapboxgl.Popup({ offset: 25 })
+                            .setHTML(`
+                                <div style="padding: 0.5rem;">
+                                    <h4 style="margin: 0 0 0.5rem; font-weight: 600;">${vehicle.title}</h4>
+                                    <p style="margin: 0; color: #717171; font-size: 0.875rem;">${vehicle.location}</p>
+                                    <p style="margin: 0.5rem 0 0; font-size: 0.75rem; color: #717171;">Exact pickup location provided after booking</p>
+                                </div>
+                            `)
+                    )
+                    .addTo(map);
+            } catch (error) {
+                console.error('Map error:', error);
+                mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Unable to load map</p>';
+            }
+        });
+    </script>

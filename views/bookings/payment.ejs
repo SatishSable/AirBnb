@@ -1,0 +1,589 @@
+<% layout("layouts/boilerplate")%>
+
+    <style>
+        .payment-page {
+            max-width: 900px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        .payment-form-section h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .booking-summary-card {
+            background: white;
+            border: 1px solid #ebebeb;
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-header {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #ebebeb;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-image {
+            width: 120px;
+            height: 90px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .summary-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .summary-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-info p {
+            font-size: 0.875rem;
+            color: #717171;
+        }
+
+        .summary-dates {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #ebebeb;
+            margin-bottom: 1rem;
+        }
+
+        .date-block label {
+            display: block;
+            font-size: 0.75rem;
+            color: #717171;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .date-block span {
+            font-weight: 600;
+        }
+
+        .price-breakdown {
+            margin-bottom: 1rem;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }
+
+        .price-row.total {
+            border-top: 1px solid #ebebeb;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Payment Form */
+        .payment-section {
+            background: #f7f7f7;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 2px solid #ebebeb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: #FF385C;
+        }
+
+        .payment-method.selected {
+            border-color: #FF385C;
+            background: #FFF0F3;
+        }
+
+        .payment-method input {
+            display: none;
+        }
+
+        .method-icon {
+            width: 50px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .method-info {
+            flex: 1;
+        }
+
+        .method-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+        }
+
+        .method-info p {
+            font-size: 0.8rem;
+            color: #717171;
+        }
+
+        /* Card Form */
+        .card-form {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .form-row {
+            margin-bottom: 1rem;
+        }
+
+        .form-row label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-row input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: #FF385C;
+            box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 56, 92, 0.3);
+        }
+
+        .pay-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pay-button .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            color: #717171;
+            font-size: 0.875rem;
+        }
+
+        .secure-badge i {
+            color: #00A699;
+        }
+
+        /* Success Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            text-align: center;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00A699, #00C9B7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .success-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .modal-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content p {
+            color: #717171;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 56, 92, 0.3);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .payment-page {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-summary-card {
+                position: static;
+                order: -1;
+            }
+        }
+    </style>
+
+    <div class="payment-page">
+        <div class="payment-form-section">
+            <h1>💳 Complete Your Booking</h1>
+
+            <div class="payment-section">
+                <h3><i class="fas fa-credit-card"></i> Payment Method</h3>
+
+                <div class="payment-methods">
+                    <label class="payment-method selected" onclick="selectMethod(this)">
+                        <input type="radio" name="method" value="card" checked>
+                        <div class="method-icon">💳</div>
+                        <div class="method-info">
+                            <h4>Credit / Debit Card</h4>
+                            <p>Visa, Mastercard, RuPay</p>
+                        </div>
+                    </label>
+
+                    <label class="payment-method" onclick="selectMethod(this)">
+                        <input type="radio" name="method" value="upi">
+                        <div class="method-icon">📱</div>
+                        <div class="method-info">
+                            <h4>UPI</h4>
+                            <p>Google Pay, PhonePe, Paytm</p>
+                        </div>
+                    </label>
+
+                    <label class="payment-method" onclick="selectMethod(this)">
+                        <input type="radio" name="method" value="netbanking">
+                        <div class="method-icon">🏦</div>
+                        <div class="method-info">
+                            <h4>Net Banking</h4>
+                            <p>All major banks supported</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="card-form" id="cardForm">
+                    <div class="form-row">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="form-row">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="cardName" placeholder="John Doe">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Expiry Date</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-row">
+                            <label>CVV</label>
+                            <input type="password" id="cardCvv" placeholder="•••" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="pay-button" id="payButton" onclick="processPayment()">
+                <i class="fas fa-lock"></i>
+                Pay ₹<%= booking.totalPrice.toLocaleString('en-IN') %>
+            </button>
+
+            <div class="secure-badge">
+                <i class="fas fa-shield-alt"></i>
+                Your payment is secure and encrypted
+            </div>
+        </div>
+
+        <div class="booking-summary-card">
+            <div class="summary-header">
+                <div class="summary-image">
+                    <img src="<%= booking.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' %>"
+                        alt="<%= booking.title %>">
+                </div>
+                <div class="summary-info">
+                    <h3>
+                        <%= booking.title %>
+                    </h3>
+                    <p><i class="fas fa-map-marker-alt"></i>
+                        <%= booking.location %>
+                    </p>
+                    <p style="margin-top: 0.5rem;">
+                        <% if(booking.type==='listing' ) { %>
+                            🏠 Stay
+                            <% } else if(booking.type==='vehicle' ) { %>
+                                🏍️ Vehicle Rental
+                                <% } else { %>
+                                    🍛 Restaurant Reservation
+                                    <% } %>
+                    </p>
+                </div>
+            </div>
+
+            <div class="summary-dates">
+                <div class="date-block">
+                    <label>
+                        <%= booking.type==='dhaba' ? 'Date' : 'Check-in' %>
+                    </label>
+                    <span>
+                        <%= new Date(booking.checkIn).toLocaleDateString('en-IN', { day: 'numeric' , month: 'short' })
+                            %>
+                    </span>
+                </div>
+                <% if(booking.type !=='dhaba' ) { %>
+                    <div class="date-block">
+                        <label>Check-out</label>
+                        <span>
+                            <%= new Date(booking.checkOut).toLocaleDateString('en-IN', { day: 'numeric' , month: 'short'
+                                }) %>
+                        </span>
+                    </div>
+                    <% } %>
+                        <% if(booking.reservationTime) { %>
+                            <div class="date-block">
+                                <label>Time</label>
+                                <span>
+                                    <%= booking.reservationTime %>
+                                </span>
+                            </div>
+                            <% } %>
+                                <div class="date-block">
+                                    <label>Guests</label>
+                                    <span>
+                                        <%= booking.guests %>
+                                    </span>
+                                </div>
+            </div>
+
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>₹<%= booking.pricePerUnit.toLocaleString('en-IN') %> × <%= booking.nights %>
+                                <%= booking.unitLabel %>
+                                    <%= booking.nights> 1 ? 's' : '' %></span>
+                    <span>₹<%= booking.basePrice.toLocaleString('en-IN') %></span>
+                </div>
+                <% if(booking.serviceFee> 0) { %>
+                    <div class="price-row">
+                        <span>Service fee</span>
+                        <span>₹<%= booking.serviceFee.toLocaleString('en-IN') %></span>
+                    </div>
+                    <% } %>
+                        <div class="price-row">
+                            <span>Taxes (18% GST)</span>
+                            <span>₹<%= booking.taxes.toLocaleString('en-IN') %></span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Total</span>
+                            <span>₹<%= booking.totalPrice.toLocaleString('en-IN') %></span>
+                        </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>Booking Confirmed!</h2>
+            <p>Your payment was successful. You will receive a confirmation email shortly.</p>
+            <a href="/bookings" class="modal-btn" id="viewBookingBtn">View My Bookings</a>
+        </div>
+    </div>
+
+    <script>
+        function selectMethod(element) {
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+
+            const cardForm = document.getElementById('cardForm');
+            const method = element.querySelector('input').value;
+            cardForm.style.display = method === 'card' ? 'block' : 'none';
+        }
+
+        // Format card number with spaces
+        document.getElementById('cardNumber').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Format expiry date
+        document.getElementById('cardExpiry').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2);
+            }
+            e.target.value = value;
+        });
+
+        async function processPayment() {
+            const button = document.getElementById('payButton');
+            const originalContent = button.innerHTML;
+
+            // Show loading state
+            button.disabled = true;
+            button.innerHTML = '<div class="spinner"></div> Processing...';
+
+            try {
+                const response = await fetch('/bookings/process-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success modal
+                    document.getElementById('successModal').classList.add('show');
+                    document.getElementById('viewBookingBtn').href = `/bookings/${result.bookingId}`;
+                } else {
+                    alert('Payment failed: ' + result.message);
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment failed. Please try again.');
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
+        }
+    </script>

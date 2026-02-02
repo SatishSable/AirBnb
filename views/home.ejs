@@ -1,0 +1,587 @@
+<% layout("layouts/boilerplate")%>
+
+    <style>
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            padding: 6rem 2rem;
+            margin: -1.5rem -0.75rem 0 -0.75rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920') center/cover;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-section p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
+        /* Category Pills */
+        .category-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .category-pill {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .category-pill:hover {
+            background: white;
+            color: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .category-pill i {
+            margin-right: 0.5rem;
+        }
+
+        /* Why Choose Section */
+        .why-choose {
+            padding: 5rem 0;
+            background: #f8f9fa;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #222;
+        }
+
+        .section-header p {
+            color: #717171;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #FF385C 0%, #E31C5F 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-card h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: #717171;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Featured Section */
+        .featured-section {
+            padding: 4rem 0;
+        }
+
+        .featured-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .featured-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .view-all-btn {
+            color: #FF385C;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            gap: 0.75rem;
+            color: #E31C5F;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .featured-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .featured-card-img {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .featured-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .featured-card:hover .featured-card-img img {
+            transform: scale(1.05);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-badge.top-rated {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+
+        .featured-card-body {
+            padding: 1rem;
+        }
+
+        .card-location {
+            color: #717171;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: #222;
+        }
+
+        .card-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-price span {
+            font-weight: 700;
+            color: #222;
+        }
+
+        .card-price small {
+            color: #717171;
+        }
+
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #FF385C;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 5rem 2rem;
+            text-align: center;
+            color: white;
+            margin: 0 -0.75rem;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn.primary {
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+        }
+
+        .cta-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 56, 92, 0.4);
+        }
+
+        .cta-btn.secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .cta-btn.secondary:hover {
+            background: white;
+            color: #1a1a2e;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.75rem;
+            }
+
+            .cta-section h2 {
+                font-size: 1.75rem;
+            }
+
+            .featured-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Experience WanderLust</h1>
+            <p>Book unique stays, rent local vehicles, and explore authentic food.</p>
+
+            <div class="category-pills">
+                <a href="/listings?category=Iconic Cities" class="category-pill">
+                    <i class="fas fa-city"></i>Iconic Cities
+                </a>
+                <a href="/listings?category=Amazing Pools" class="category-pill">
+                    <i class="fas fa-swimming-pool"></i>Amazing Pools
+                </a>
+                <a href="/listings?category=Mountains" class="category-pill">
+                    <i class="fas fa-mountain"></i>Mountains
+                </a>
+                <a href="/listings?category=Beach" class="category-pill">
+                    <i class="fas fa-umbrella-beach"></i>Beachfront
+                </a>
+                <a href="/vehicles" class="category-pill">
+                    <i class="fas fa-motorcycle"></i>Vehicles
+                </a>
+                <a href="/dhabas" class="category-pill">
+                    <i class="fas fa-utensils"></i>Dhabas
+                </a>
+                <a href="/listings?category=Camping" class="category-pill">
+                    <i class="fas fa-campground"></i>Camping
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Section -->
+    <section class="why-choose">
+        <div class="section-header">
+            <h2>Why Choose WanderLust</h2>
+            <p>Experience travel like a local with our all-in-one platform.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>Verified Stays</h4>
+                <p>Every listing is hand-picked and verified by our team for safety and comfort.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-car-side"></i>
+                </div>
+                <h4>Local Wheels</h4>
+                <p>Rent vehicles directly from locals for an authentic and budget-friendly journey.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h4>Authentic Food</h4>
+                <p>Discover hidden culinary gems and traditional Dhabas recommended by locals.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Stays -->
+    <section class="featured-section">
+        <div class="featured-header">
+            <h2>Featured Stays</h2>
+            <a href="/listings" class="view-all-btn">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="featured-grid">
+            <% if(allListings && allListings.length> 0) { %>
+                <% allListings.slice(0, 4).forEach(listing=> { %>
+                    <a href="/listings/<%= listing._id %>" class="featured-card">
+                        <div class="featured-card-img">
+                            <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600' %>"
+                                alt="<%= listing.title %>">
+                            <% if(listing.instantBook) { %>
+                                <span class="card-badge top-rated">Top Rated</span>
+                                <% } %>
+                        </div>
+                        <div class="featured-card-body">
+                            <p class="card-location">
+                                <%= listing.location %>, <%= listing.country %>
+                            </p>
+                            <h3 class="card-title">
+                                <%= listing.title %>
+                            </h3>
+                            <div class="card-price">
+                                <span>₹<%= listing.price.toLocaleString("en-IN") %> <small>/ night</small></span>
+                                <div class="card-rating">
+                                    <i class="fas fa-star"></i> 4.9
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <% }); %>
+                        <% } else { %>
+                            <p>No listings available yet.</p>
+                            <% } %>
+        </div>
+    </section>
+
+    <!-- Featured Vehicles -->
+    <section class="featured-section" style="background: #f8f9fa; margin: 0 -0.75rem; padding: 4rem 2rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div class="featured-header">
+                <h2>Rent Wheels</h2>
+                <a href="/vehicles" class="view-all-btn">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="featured-grid">
+                <% if(allVehicles && allVehicles.length> 0) { %>
+                    <% allVehicles.slice(0, 4).forEach(vehicle=> { %>
+                        <a href="/vehicles/<%= vehicle._id %>" class="featured-card">
+                            <div class="featured-card-img">
+                                <img src="<%= vehicle.image && vehicle.image.url ? vehicle.image.url : 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600' %>"
+                                    alt="<%= vehicle.title %>">
+                                <span class="card-badge">
+                                    <%= vehicle.vehicleType %>
+                                </span>
+                            </div>
+                            <div class="featured-card-body">
+                                <p class="card-location">
+                                    <%= vehicle.location %>
+                                </p>
+                                <h3 class="card-title">
+                                    <%= vehicle.title %>
+                                </h3>
+                                <div class="card-price">
+                                    <span>₹<%= vehicle.pricePerDay.toLocaleString("en-IN") %> <small>/
+                                                day</small></span>
+                                    <% if(vehicle.instantBook) { %>
+                                        <span class="card-badge" style="background: #00A699; color: white;">Instant
+                                            Book</span>
+                                        <% } %>
+                                </div>
+                            </div>
+                        </a>
+                        <% }); %>
+                            <% } else { %>
+                                <div class="featured-card"
+                                    style="padding: 3rem; text-align: center; grid-column: 1/-1;">
+                                    <i class="fas fa-motorcycle"
+                                        style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+                                    <p style="color: #717171;">Vehicle rentals coming soon!</p>
+                                    <a href="/vehicles/new" class="cta-btn primary"
+                                        style="display: inline-block; margin-top: 1rem;">List Your Vehicle</a>
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Dhabas -->
+    <section class="featured-section">
+        <div class="featured-header">
+            <h2>Authentic Eats</h2>
+            <a href="/dhabas" class="view-all-btn">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="featured-grid">
+            <% if(allDhabas && allDhabas.length> 0) { %>
+                <% allDhabas.slice(0, 4).forEach(dhaba=> { %>
+                    <a href="/dhabas/<%= dhaba._id %>" class="featured-card">
+                        <div class="featured-card-img">
+                            <img src="<%= dhaba.image && dhaba.image.url ? dhaba.image.url : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600' %>"
+                                alt="<%= dhaba.title %>">
+                            <span class="card-badge">
+                                <%= dhaba.category %>
+                            </span>
+                        </div>
+                        <div class="featured-card-body">
+                            <p class="card-location">
+                                <%= dhaba.location %>
+                            </p>
+                            <h3 class="card-title">
+                                <%= dhaba.title %>
+                            </h3>
+                            <div class="card-price">
+                                <span>
+                                    <%= dhaba.priceRange %> · <%= dhaba.cuisine ? dhaba.cuisine.join(', ') : '
+                                            Multi-Cuisine' %>
+                                </span>
+                                <div class="card-rating">
+                                    <i class="fas fa-star"></i>
+                                    <%= dhaba.rating || '4.5' %>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <% }); %>
+                        <% } else { %>
+                            <div class="featured-card" style="padding: 3rem; text-align: center; grid-column: 1/-1;">
+                                <i class="fas fa-utensils"
+                                    style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+                                <p style="color: #717171;">Dhabas coming soon!</p>
+                                <a href="/dhabas/new" class="cta-btn primary"
+                                    style="display: inline-block; margin-top: 1rem;">List Your Dhaba</a>
+                            </div>
+                            <% } %>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2>Join the WanderLust Community</h2>
+        <p>Start your journey today and experience travel like never before.</p>
+        <div class="cta-buttons">
+            <a href="/signup" class="cta-btn primary">Sign Up Free</a>
+            <a href="/login" class="cta-btn secondary">Log In</a>
+        </div>
+    </section>

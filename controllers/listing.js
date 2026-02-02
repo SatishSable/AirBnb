@@ -4,34 +4,63 @@ const { listingSchema } = require("../schema.js");
 const mapBoxToken = process.env.Map_Token;
 const geocodingClient = mbxGeocoding({ accessToken: mapBoxToken });
 
-module.exports.index  = async (req, res) => {
+module.exports.index = async (req, res) => {
   const allListings = await Listing.find({});
- 
+
   res.render("listings/index.ejs", { allListings }); // no './'
+}
+
+module.exports.searchListings = async (req, res) => {
+  const { location, checkIn, checkOut, guests, category } = req.query;
+
+  let query = {};
+
+  // Search by location (case-insensitive, partial match)
+  if (location) {
+    query.$or = [
+      { location: { $regex: location, $options: 'i' } },
+      { country: { $regex: location, $options: 'i' } },
+      { title: { $regex: location, $options: 'i' } }
+    ];
+  }
+
+  // Filter by category
+  if (category && category !== 'all') {
+    query.category = category;
+  }
+
+  // Filter by guest capacity
+  if (guests) {
+    query.guests = { $gte: parseInt(guests) };
+  }
+
+  const allListings = await Listing.find(query);
+
+  res.render("listings/index.ejs", { allListings });
 }
 
 module.exports.renderNewForm = (req, res) => {
 
   res.render("listings/new.ejs");
-  
+
 }
 
 module.exports.showListing = async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id)
-  .populate({
-    path: "reviews",
-    populate: {
-      path : "author",
-    }
-  })
-  .populate("owner");
+    .populate({
+      path: "reviews",
+      populate: {
+        path: "author",
+      }
+    })
+    .populate("owner");
   if (!listing) {
     req.flash("error", "Listing not found");
     return res.redirect("/listings");  // ✅ added return
-  } 
-  console.log(listing);
-  res.render("listings/show.ejs", { listing });
+  }
+  console.log("Map Token:", process.env.Map_Token ? "Present" : "Missing");
+  res.render("listings/show.ejs", { listing, mapBoxToken: process.env.Map_Token });
 }
 
 
@@ -76,8 +105,8 @@ module.exports.renderEditForm = async (req, res) => {
   req.flash("success", "listing Edited successfully!");
 
   let original = listing.image.url;
-  original =  original.replace("/uploads/", "/upload/h_300/");
-  res.render("listings/edit.ejs", { listing , original });
+  original = original.replace("/uploads/", "/upload/h_300/");
+  res.render("listings/edit.ejs", { listing, original });
 }
 
 module.exports.updateForm = async (req, res) => {
@@ -93,7 +122,7 @@ module.exports.updateForm = async (req, res) => {
       filename: req.file.filename,
     };
     await listing.save();
-  
+
   }
 
   req.flash("success", "Listing updated successfully!");
@@ -101,10 +130,10 @@ module.exports.updateForm = async (req, res) => {
 };
 
 
-module.exports.deleteListing = async(req ,res) => {
+module.exports.deleteListing = async (req, res) => {
   const { id } = req.params;
- let deleteListing = await Listing.findByIdAndDelete(id);
- console.log(deleteListing);
- req.flash("success", " listing Deleted successfully!");
- res.redirect("/listings");
+  let deleteListing = await Listing.findByIdAndDelete(id);
+  console.log(deleteListing);
+  req.flash("success", " listing Deleted successfully!");
+  res.redirect("/listings");
 }
