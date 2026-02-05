@@ -211,20 +211,32 @@
                   <li>
                     <hr class="dropdown-divider">
                   </li>
-                  <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="fas fa-heart me-2"></i>Wishlists</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="fas fa-suitcase me-2"></i>Trips</a></li>
-                  <li><a class="dropdown-item" href="/listings/new"><i class="fas fa-home me-2"></i>List your
-                      property</a></li>
+                  <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                  </li>
+                  <li><a class="dropdown-item" href="/dashboard/profile"><i class="fas fa-user me-2"></i>Profile</a>
+                  </li>
+                  <li><a class="dropdown-item" href="/dashboard/bookings"><i class="fas fa-calendar-check me-2"></i>My
+                      Bookings</a></li>
+                  <li><a class="dropdown-item" href="/dashboard/listings"><i class="fas fa-building me-2"></i>My
+                      Listings</a></li>
                   <li>
                     <hr class="dropdown-divider">
                   </li>
-                  <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Account settings</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help Center</a></li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Log out</a></li>
+                  <li><a class="dropdown-item" href="/listings/new"><i class="fas fa-plus me-2"></i>Add Listing</a></li>
+                  <li><a class="dropdown-item" href="/vehicles/new"><i class="fas fa-car me-2"></i>Add Vehicle</a></li>
+                  <li><a class="dropdown-item" href="/dhabas/new"><i class="fas fa-utensils me-2"></i>Add Dhaba</a></li>
+                  <% if (currUser.role==='admin' ) { %>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="/admin" style="color: #FF385C;"><i
+                          class="fas fa-shield-alt me-2"></i><b>Admin Panel</b></a></li>
+                    <% } %>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Log out</a>
+                      </li>
                 </ul>
               </div>
               <% } %>

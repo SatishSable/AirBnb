@@ -1,0 +1,398 @@
+<% layout("layouts/boilerplate") %>
+
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #FF385C;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-nav a {
+            padding: 0.75rem 1.5rem;
+            background: #f7f7f7;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #222;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-nav a:hover,
+        .dashboard-nav a.active {
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .stat-card .label {
+            color: #717171;
+            font-size: 0.9rem;
+        }
+
+        .stat-card.listings .icon {
+            color: #FF385C;
+        }
+
+        .stat-card.vehicles .icon {
+            color: #00A699;
+        }
+
+        .stat-card.dhabas .icon {
+            color: #FF9800;
+        }
+
+        .stat-card.bookings .icon {
+            color: #9C27B0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .item-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .item-card .content {
+            padding: 1rem;
+        }
+
+        .item-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-card p {
+            color: #717171;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .item-card .actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .item-card .actions a {
+            flex: 1;
+            padding: 0.5rem;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .actions .view {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .actions .edit {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #717171;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 56, 92, 0.3);
+            color: white;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: capitalize;
+        }
+
+        .status-confirmed {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-cancelled {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-pending {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+    </style>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>My Dashboard</h1>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <%= currUser.username.charAt(0).toUpperCase() %>
+                </div>
+                <div>
+                    <strong>
+                        <%= currUser.username %>
+                    </strong>
+                    <p style="margin: 0; font-size: 0.85rem; color: #717171;">
+                        <%= currUser.email %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="dashboard-nav">
+            <a href="/dashboard" class="active"><i class="fas fa-home"></i> Overview</a>
+            <a href="/dashboard/profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/dashboard/listings"><i class="fas fa-building"></i> My Listings</a>
+            <a href="/dashboard/vehicles"><i class="fas fa-car"></i> My Vehicles</a>
+            <a href="/dashboard/dhabas"><i class="fas fa-utensils"></i> My Dhabas</a>
+            <a href="/dashboard/bookings"><i class="fas fa-calendar-check"></i> My Bookings</a>
+            <% if (currUser.role==='admin' ) { %>
+                <a href="/admin" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                    <i class="fas fa-shield-alt"></i> Admin Panel
+                </a>
+                <% } %>
+        </nav>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="/listings/new" class="quick-action-btn"><i class="fas fa-plus"></i> Add Listing</a>
+            <a href="/vehicles/new" class="quick-action-btn"><i class="fas fa-plus"></i> Add Vehicle</a>
+            <a href="/dhabas/new" class="quick-action-btn"><i class="fas fa-plus"></i> Add Dhaba</a>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card listings">
+                <div class="icon"><i class="fas fa-building"></i></div>
+                <div class="number">
+                    <%= myListings.length %>
+                </div>
+                <div class="label">My Listings</div>
+            </div>
+            <div class="stat-card vehicles">
+                <div class="icon"><i class="fas fa-car"></i></div>
+                <div class="number">
+                    <%= myVehicles.length %>
+                </div>
+                <div class="label">My Vehicles</div>
+            </div>
+            <div class="stat-card dhabas">
+                <div class="icon"><i class="fas fa-utensils"></i></div>
+                <div class="number">
+                    <%= myDhabas.length %>
+                </div>
+                <div class="label">My Dhabas</div>
+            </div>
+            <div class="stat-card bookings">
+                <div class="icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="number">
+                    <%= myBookings.length %>
+                </div>
+                <div class="label">My Bookings</div>
+            </div>
+        </div>
+
+        <!-- Recent Listings -->
+        <h2 class="section-title"><i class="fas fa-building"></i> My Recent Listings</h2>
+        <% if (myListings.length> 0) { %>
+            <div class="items-grid">
+                <% myListings.slice(0, 4).forEach(listing=> { %>
+                    <div class="item-card">
+                        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' %>"
+                            alt="<%= listing.title %>">
+                        <div class="content">
+                            <h3>
+                                <%= listing.title %>
+                            </h3>
+                            <p>
+                                <%= listing.location %> • ₹<%= listing.price.toLocaleString('en-IN') %>/night
+                            </p>
+                            <div class="actions">
+                                <a href="/listings/<%= listing._id %>" class="view">View</a>
+                                <a href="/listings/<%= listing._id %>/edit" class="edit">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-building"></i>
+                    <p>You haven't created any listings yet</p>
+                    <a href="/listings/new" class="quick-action-btn"
+                        style="display: inline-flex; margin-top: 1rem;">Create Your First Listing</a>
+                </div>
+                <% } %>
+
+                    <!-- Recent Bookings -->
+                    <h2 class="section-title"><i class="fas fa-calendar-check"></i> My Recent Bookings</h2>
+                    <% if (myBookings.length> 0) { %>
+                        <div class="items-grid">
+                            <% myBookings.slice(0, 4).forEach(booking=> { %>
+                                <div class="item-card">
+                                    <% let imgUrl='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' ;
+                                        let title='Booking' ; let type='Listing' ; if (booking.listing) {
+                                        imgUrl=booking.listing.image && booking.listing.image.url ?
+                                        booking.listing.image.url : imgUrl; title=booking.listing.title; type='Listing'
+                                        ; } else if (booking.vehicle) { imgUrl=booking.vehicle.image &&
+                                        booking.vehicle.image.url ? booking.vehicle.image.url : imgUrl;
+                                        title=booking.vehicle.title; type='Vehicle' ; } else if (booking.dhaba) {
+                                        imgUrl=booking.dhaba.image && booking.dhaba.image.url ? booking.dhaba.image.url
+                                        : imgUrl; title=booking.dhaba.title; type='Dhaba' ; } %>
+                                        <img src="<%= imgUrl %>" alt="<%= title %>">
+                                        <div class="content">
+                                            <h3>
+                                                <%= title %>
+                                            </h3>
+                                            <p>
+                                                <%= type %> • <%= booking.checkIn ? new
+                                                        Date(booking.checkIn).toLocaleDateString() : 'N/A' %>
+                                            </p>
+                                            <p style="margin-top: 0.5rem;">
+                                                <span class="status-badge status-<%= booking.status || 'pending' %>">
+                                                    <%= booking.status || 'pending' %>
+                                                </span>
+                                            </p>
+                                        </div>
+                                </div>
+                                <% }); %>
+                        </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-check"></i>
+                                <p>You haven't made any bookings yet</p>
+                                <a href="/listings" class="quick-action-btn"
+                                    style="display: inline-flex; margin-top: 1rem;">Browse Listings</a>
+                            </div>
+                            <% } %>
+    </div>

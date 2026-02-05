@@ -1,0 +1,209 @@
+<% layout("layouts/boilerplate") %>
+
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-nav a {
+            padding: 0.75rem 1.5rem;
+            background: #f7f7f7;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #222;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-nav a:hover,
+        .dashboard-nav a.active {
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+        }
+
+        .add-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #FF385C, #E31C5F);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .item-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .item-card .content {
+            padding: 1rem;
+        }
+
+        .item-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-card p {
+            color: #717171;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .item-card .price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #222;
+            margin-top: 0.5rem;
+        }
+
+        .item-card .actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .item-card .actions a,
+        .item-card .actions button {
+            flex: 1;
+            padding: 0.5rem;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+
+        .actions .view {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .actions .edit {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .actions .delete {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: #717171;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>My Vehicles (<%= vehicles.length %>)</h1>
+            <a href="/vehicles/new" class="add-btn"><i class="fas fa-plus"></i> Add New Vehicle</a>
+        </div>
+
+        <nav class="dashboard-nav">
+            <a href="/dashboard"><i class="fas fa-home"></i> Overview</a>
+            <a href="/dashboard/profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/dashboard/listings"><i class="fas fa-building"></i> My Listings</a>
+            <a href="/dashboard/vehicles" class="active"><i class="fas fa-car"></i> My Vehicles</a>
+            <a href="/dashboard/dhabas"><i class="fas fa-utensils"></i> My Dhabas</a>
+            <a href="/dashboard/bookings"><i class="fas fa-calendar-check"></i> My Bookings</a>
+        </nav>
+
+        <% if (vehicles.length> 0) { %>
+            <div class="items-grid">
+                <% vehicles.forEach(vehicle=> { %>
+                    <div class="item-card">
+                        <img src="<%= vehicle.image && vehicle.image.url ? vehicle.image.url : 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400' %>"
+                            alt="<%= vehicle.title %>">
+                        <div class="content">
+                            <h3>
+                                <%= vehicle.title %>
+                            </h3>
+                            <p><i class="fas fa-map-marker-alt"></i>
+                                <%= vehicle.location %>
+                            </p>
+                            <p style="text-transform: capitalize; margin-top: 0.25rem;"><i class="fas fa-car"></i>
+                                <%= vehicle.vehicleType %>
+                            </p>
+                            <p class="price">₹<%= vehicle.pricePerDay.toLocaleString('en-IN') %> <small
+                                        style="font-weight: 400; color: #717171;">/ day</small></p>
+                            <div class="actions">
+                                <a href="/vehicles/<%= vehicle._id %>" class="view"><i class="fas fa-eye"></i> View</a>
+                                <a href="/vehicles/<%= vehicle._id %>/edit" class="edit"><i class="fas fa-edit"></i>
+                                    Edit</a>
+                                <form action="/vehicles/<%= vehicle._id %>?_method=DELETE" method="POST"
+                                    style="flex: 1; margin: 0;">
+                                    <button type="submit" class="delete"
+                                        onclick="return confirm('Delete this vehicle?');" style="width: 100%;">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-car"></i>
+                    <h3>No Vehicles Yet</h3>
+                    <p>Start by listing your first vehicle</p>
+                    <a href="/vehicles/new" class="add-btn" style="display: inline-flex; margin-top: 1rem;">Add
+                        Vehicle</a>
+                </div>
+                <% } %>
+    </div>

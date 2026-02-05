@@ -25,6 +25,8 @@ const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking.js");
 const vehicleRouter = require("./routes/vehicle.js");
 const dhabaRouter = require("./routes/dhaba.js");
+const adminRouter = require("./routes/admin.js");
+const dashboardRouter = require("./routes/dashboard.js");
 
 // MongoDB connection
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/Wanderlust";
@@ -90,21 +92,91 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-// Passport configuration
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-// Flash + current user middleware
+// Flash + current user middleware (Initial)
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
-  res.locals.currUser = req.user;
+  res.locals.currUser = null; // Set default to prevent ReferenceError
   next();
 });
+
+// Passport configuration
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Update core passport strategy
+passport.use(new LocalStrategy(User.authenticate()));
+
+
+// Google OAuth Strategy
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:8080/auth/google/callback"
+  },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        // Check if user exists with Google ID
+        let user = await User.findOne({ googleId: profile.id });
+
+        if (user) {
+          return done(null, user);
+        }
+
+        // Check if user exists with same email
+        user = await User.findOne({ email: profile.emails[0].value });
+
+        if (user) {
+          // Link Google account to existing user
+          user.googleId = profile.id;
+          await user.save();
+          return done(null, user);
+        }
+
+        // Create new user
+        const newUser = new User({
+          username: profile.displayName.replace(/\s+/g, '_') + '_' + profile.id.slice(-4),
+          email: profile.emails[0].value,
+          googleId: profile.id,
+          role: 'user'
+        });
+
+        await newUser.save();
+        return done(null, newUser);
+      } catch (error) {
+        return done(error, null);
+      }
+    }));
+}
+
+// Combine passport-local-mongoose with custom logic for Google
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    // Validate if id is a valid MongoDB ObjectId to prevent CastError
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return done(null, null);
+    }
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+// Update currUser after passport has populated req.user
+app.use((req, res, next) => {
+  res.locals.currUser = req.user || null;
+  next();
+});
+
+
 
 // Home page route
 app.get("/", wrapAsync(async (req, res) => {
@@ -121,6 +193,8 @@ app.use("/", userRouter);
 app.use("/", bookingRouter);
 app.use("/vehicles", vehicleRouter);
 app.use("/dhabas", dhabaRouter);
+app.use("/admin", adminRouter);
+app.use("/dashboard", dashboardRouter);
 
 // Error handler
 app.use((err, req, res, next) => {

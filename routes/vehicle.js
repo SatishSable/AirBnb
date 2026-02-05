@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
-const { isLoggedIn } = require("../middleware.js");
+const { isLoggedIn, isVehicleOwner } = require("../middleware.js");
 const vehicleController = require("../controllers/vehicle.js");
 const multer = require("multer");
 const { storage } = require("../cloudConfig.js");
@@ -20,12 +20,13 @@ router.post("/", isLoggedIn, upload.single("vehicle[image]"), wrapAsync(vehicleC
 router.get("/:id", wrapAsync(vehicleController.showVehicle));
 
 // Edit form
-router.get("/:id/edit", isLoggedIn, wrapAsync(vehicleController.renderEditForm));
+router.get("/:id/edit", isLoggedIn, isVehicleOwner, wrapAsync(vehicleController.renderEditForm));
 
 // Update vehicle
-router.put("/:id", isLoggedIn, upload.single("vehicle[image]"), wrapAsync(vehicleController.updateVehicle));
+router.put("/:id", isLoggedIn, isVehicleOwner, upload.single("vehicle[image]"), wrapAsync(vehicleController.updateVehicle));
 
 // Delete vehicle
-router.delete("/:id", isLoggedIn, wrapAsync(vehicleController.deleteVehicle));
+router.delete("/:id", isLoggedIn, isVehicleOwner, wrapAsync(vehicleController.deleteVehicle));
 
 module.exports = router;
+
