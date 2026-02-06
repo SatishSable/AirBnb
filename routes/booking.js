@@ -19,6 +19,10 @@ router.get("/bookings/payment", isLoggedIn, bookingController.showPaymentPage);
 // Process Payment
 router.post("/bookings/process-payment", isLoggedIn, wrapAsync(bookingController.processPayment));
 
+// Razorpay (Test Mode) - Create order + Verify payment
+router.post("/bookings/create-order", isLoggedIn, wrapAsync(bookingController.createRazorpayOrder));
+router.post("/bookings/verify-payment", isLoggedIn, wrapAsync(bookingController.verifyRazorpayPayment));
+
 // View All Bookings
 router.get("/bookings", isLoggedIn, wrapAsync(bookingController.getUserBookings));
 

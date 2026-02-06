@@ -2,6 +2,15 @@ const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
 const Vehicle = require("../models/vehicle.js");
 const Dhaba = require("../models/dhaba.js");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
+const razorpay = process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET
+    ? new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+    })
+    : null;
 
 // ================================
 // LISTING BOOKING
@@ -59,6 +68,121 @@ module.exports.createListingBooking = async (req, res) => {
         console.error("Create listing booking error:", error);
         req.flash("error", "Failed to create booking");
         res.redirect("/listings");
+    }
+};
+
+// ================================
+// RAZORPAY (TEST MODE)
+// ================================
+
+module.exports.createRazorpayOrder = async (req, res) => {
+    const pendingBooking = req.session.pendingBooking;
+
+    if (!pendingBooking) {
+        return res.status(400).json({ success: false, message: "No pending booking found" });
+    }
+
+    if (!razorpay) {
+        return res.status(500).json({
+            success: false,
+            message: "Razorpay keys not configured (set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)"
+        });
+    }
+
+    const amountInPaise = Math.round(Number(pendingBooking.totalPrice) * 100);
+    if (!Number.isFinite(amountInPaise) || amountInPaise <= 0) {
+        return res.status(400).json({ success: false, message: "Invalid amount" });
+    }
+
+    const order = await razorpay.orders.create({
+        amount: amountInPaise,
+        currency: "INR",
+        receipt: `rcpt_${pendingBooking.type}_${pendingBooking.itemId}_${Date.now()}`,
+    });
+
+    const newBooking = new Booking({
+        bookingType: pendingBooking.type,
+        guest: req.user._id,
+        checkIn: new Date(pendingBooking.checkIn),
+        checkOut: new Date(pendingBooking.checkOut),
+        guests: pendingBooking.guests,
+        basePrice: pendingBooking.basePrice,
+        serviceFee: pendingBooking.serviceFee,
+        taxes: pendingBooking.taxes,
+        totalPrice: pendingBooking.totalPrice,
+        paymentStatus: 'pending',
+        orderId: order.id,
+        status: 'pending',
+        reservationTime: pendingBooking.reservationTime
+    });
+
+    if (pendingBooking.type === 'listing') {
+        newBooking.listing = pendingBooking.itemId;
+    } else if (pendingBooking.type === 'vehicle') {
+        newBooking.vehicle = pendingBooking.itemId;
+    } else if (pendingBooking.type === 'dhaba') {
+        newBooking.dhaba = pendingBooking.itemId;
+    }
+
+    await newBooking.save();
+
+    return res.json({
+        success: true,
+        keyId: process.env.RAZORPAY_KEY_ID,
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        bookingId: newBooking._id,
+        name: "Wanderlust",
+        description: `Booking payment (${pendingBooking.type})`,
+    });
+};
+
+module.exports.verifyRazorpayPayment = async (req, res) => {
+    try {
+        const { razorpay_payment_id, razorpay_order_id, razorpay_signature, bookingId } = req.body;
+
+        if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature || !bookingId) {
+            return res.status(400).json({ success: false, message: "Missing payment details" });
+        }
+
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+            .digest("hex");
+
+        if (expectedSignature !== razorpay_signature) {
+            await Booking.findByIdAndUpdate(bookingId, {
+                paymentStatus: 'failed',
+                status: 'pending'
+            });
+            return res.status(400).json({ success: false, message: "Payment verification failed" });
+        }
+
+        const booking = await Booking.findById(bookingId);
+        if (!booking) {
+            return res.status(404).json({ success: false, message: "Booking not found" });
+        }
+
+        if (String(booking.guest) !== String(req.user._id)) {
+            return res.status(403).json({ success: false, message: "Not authorized" });
+        }
+
+        if (booking.orderId !== razorpay_order_id) {
+            return res.status(400).json({ success: false, message: "Order ID mismatch" });
+        }
+
+        booking.paymentStatus = 'completed';
+        booking.paymentId = razorpay_payment_id;
+        booking.status = 'confirmed';
+        await booking.save();
+
+        delete req.session.pendingBooking;
+
+        return res.json({ success: true, bookingId: booking._id, message: "Payment verified" });
+    } catch (error) {
+        console.error("Verify payment error:", error);
+        return res.status(500).json({ success: false, message: "Server error verifying payment" });
     }
 };
 

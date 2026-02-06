@@ -176,7 +176,6 @@
           <a class="nav-link" href="/listings">Stays</a>
           <a class="nav-link" href="/vehicles">Vehicles</a>
           <a class="nav-link" href="/dhabas">Dhabas</a>
-          <a class="nav-link" href="/listings/new"><b>List Property</b></a>
 
           <% if (!currUser) { %>
             <!-- Guest Menu -->
@@ -222,7 +221,7 @@
                   <li>
                     <hr class="dropdown-divider">
                   </li>
-                  <li><a class="dropdown-item" href="/listings/new"><i class="fas fa-plus me-2"></i>Add Listing</a></li>
+                  <li><a class="dropdown-item" href="/listings/new"><i class="fas fa-plus me-2"></i>Add Stays</a></li>
                   <li><a class="dropdown-item" href="/vehicles/new"><i class="fas fa-car me-2"></i>Add Vehicle</a></li>
                   <li><a class="dropdown-item" href="/dhabas/new"><i class="fas fa-utensils me-2"></i>Add Dhaba</a></li>
                   <% if (currUser.role==='admin' ) { %>

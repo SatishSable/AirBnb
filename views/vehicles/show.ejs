@@ -180,7 +180,7 @@
                 </h1>
                 <p class="vehicle-location">
                     <i class="fas fa-map-marker-alt"></i>
-                    <%= vehicle.location %>
+                    <%= vehicle.mapboxPlaceName ? vehicle.mapboxPlaceName : vehicle.location %>
                 </p>
 
                 <div class="vehicle-specs">
@@ -326,60 +326,14 @@
                                         Location</h2>
                                     <p style="color: #717171; margin-bottom: 1rem;">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        <%= vehicle.location %>
+                                        <%= vehicle.mapboxPlaceName ? vehicle.mapboxPlaceName : vehicle.location %>
                                     </p>
                                     <div id="map" style="height: 350px; border-radius: 16px; overflow: hidden;"></div>
                                 </div>
     </div>
 
     <script>
-        const maptoken = "<%= mapBoxToken || '' %>";
-        const vehicle = <% - JSON.stringify(vehicle) %>;
+        var maptoken = "<%- mapBoxToken || '' %>";
+        var vehicle = <%- JSON.stringify(vehicle) %>;
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const mapContainer = document.getElementById('map');
-            if (!mapContainer) return;
-
-            if (!maptoken) {
-                mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Map unavailable - Token not configured</p>';
-                return;
-            }
-
-            if (!vehicle.geometry || !vehicle.geometry.coordinates) {
-                mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Location not available for this vehicle</p>';
-                return;
-            }
-
-            try {
-                mapboxgl.accessToken = maptoken;
-                const [lng, lat] = vehicle.geometry.coordinates;
-
-                const map = new mapboxgl.Map({
-                    container: 'map',
-                    style: 'mapbox://styles/mapbox/streets-v12',
-                    center: [lng, lat],
-                    zoom: 13
-                });
-
-                map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-                new mapboxgl.Marker({ color: '#1a1a2e' })
-                    .setLngLat([lng, lat])
-                    .setPopup(
-                        new mapboxgl.Popup({ offset: 25 })
-                            .setHTML(`
-                                <div style="padding: 0.5rem;">
-                                    <h4 style="margin: 0 0 0.5rem; font-weight: 600;">${vehicle.title}</h4>
-                                    <p style="margin: 0; color: #717171; font-size: 0.875rem;">${vehicle.location}</p>
-                                    <p style="margin: 0.5rem 0 0; font-size: 0.75rem; color: #717171;">Exact pickup location provided after booking</p>
-                                </div>
-                            `)
-                    )
-                    .addTo(map);
-            } catch (error) {
-                console.error('Map error:', error);
-                mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Unable to load map</p>';
-            }
-        });
-    </script>
+    <script src="/js/map.js"></script>

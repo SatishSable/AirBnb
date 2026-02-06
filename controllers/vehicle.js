@@ -1,5 +1,7 @@
 const Vehicle = require("../models/vehicle.js");
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.Map_Token;
+const geocodingClient = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req, res) => {
     const { type, location } = req.query;
@@ -44,11 +46,22 @@ module.exports.createVehicle = async (req, res) => {
         };
     }
 
-    // Default geometry if not provided
-    newVehicle.geometry = {
-        type: "Point",
-        coordinates: [77.5946, 12.9716] // Default Bangalore
-    };
+    // Geocode location with Mapbox (fallback if no result)
+    let response = await geocodingClient.forwardGeocode({
+        query: newVehicle.location,
+        limit: 1,
+    }).send();
+
+    if (response.body.features.length > 0) {
+        newVehicle.geometry = response.body.features[0].geometry;
+        newVehicle.mapboxPlaceName = response.body.features[0].place_name;
+    } else {
+        newVehicle.geometry = {
+            type: "Point",
+            coordinates: [77.5946, 12.9716] // Default Bangalore
+        };
+        newVehicle.mapboxPlaceName = undefined;
+    }
 
     await newVehicle.save();
     req.flash("success", "Vehicle listed successfully!");
@@ -69,7 +82,27 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateVehicle = async (req, res) => {
     const { id } = req.params;
-    const vehicle = await Vehicle.findByIdAndUpdate(id, { ...req.body.vehicle });
+
+    const existingVehicle = await Vehicle.findById(id);
+    const prevLocation = (existingVehicle?.location || "").trim();
+
+    const vehicle = await Vehicle.findByIdAndUpdate(id, { ...req.body.vehicle }, { new: true });
+
+    if (req.body.vehicle && typeof req.body.vehicle.location === "string") {
+        const nextLocation = req.body.vehicle.location.trim();
+        if (nextLocation && nextLocation !== prevLocation) {
+            let response = await geocodingClient.forwardGeocode({
+                query: nextLocation,
+                limit: 1,
+            }).send();
+
+            if (response.body.features.length > 0) {
+                vehicle.geometry = response.body.features[0].geometry;
+                vehicle.mapboxPlaceName = response.body.features[0].place_name;
+                await vehicle.save();
+            }
+        }
+    }
 
     if (req.file) {
         vehicle.image = {

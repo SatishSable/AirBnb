@@ -19,6 +19,7 @@ const vehicleSchema = new Schema({
         type: String,
         required: true,
     },
+    mapboxPlaceName: String,
     vehicleType: {
         type: String,
         enum: ['bike', 'car', 'scooter', 'suv', 'van'],

@@ -66,33 +66,35 @@ module.exports.showListing = async (req, res) => {
 
 
 module.exports.createListing = async (req, res, next) => {
-  // 🔹 Geocode location with Mapbox
+  // Geocode location with Mapbox
   let response = await geocodingClient.forwardGeocode({
     query: req.body.listing.location,
     limit: 1,
   }).send();
 
-  // 🔹 Image upload info
+  // Image upload info
   let url = req.file.path;
   let filename = req.file.filename;
 
-  // 🔹 Create new listing
+  // Create new listing
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
   newListing.image = { url, filename };
 
-  // 🔹 Always set geometry (fallback if no result)
+  // Always set geometry (fallback if no result)
   if (response.body.features.length > 0) {
     newListing.geometry = response.body.features[0].geometry;
+    newListing.mapboxPlaceName = response.body.features[0].place_name;
   } else {
     newListing.geometry = {
       type: "Point",
       coordinates: [0, 0], // fallback default
     };
+    newListing.mapboxPlaceName = undefined;
   }
 
   let saved = await newListing.save();
-  console.log("✅ Saved Listing:", saved);
+  console.log(" Saved Listing:", saved);
 
   req.flash("success", "New listing created successfully!");
   res.redirect("/listings");
@@ -112,10 +114,30 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateForm = async (req, res) => {
   const { id } = req.params;
 
-  // Update text fields (title, price, etc.)
-  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+  const existingListing = await Listing.findById(id);
+  const prevLocation = (existingListing?.location || "").trim();
 
-  // ✅ Update image ONLY if a new file is uploaded
+  // Update text fields (title, price, etc.)
+  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { new: true });
+
+  if (req.body.listing && typeof req.body.listing.location === "string") {
+    const nextLocation = req.body.listing.location.trim();
+
+    if (nextLocation && nextLocation !== prevLocation) {
+      let response = await geocodingClient.forwardGeocode({
+        query: nextLocation,
+        limit: 1,
+      }).send();
+
+      if (response.body.features.length > 0) {
+        listing.geometry = response.body.features[0].geometry;
+        listing.mapboxPlaceName = response.body.features[0].place_name;
+      }
+      await listing.save();
+    }
+  }
+
+  // Update image ONLY if a new file is uploaded
   if (req.file) {
     listing.image = {
       url: req.file.path,

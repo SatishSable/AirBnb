@@ -21,6 +21,7 @@ const listingSchema = new mongoose.Schema({
     price: Number,
     location: String,
     country: String,
+    mapboxPlaceName: String,
 
     // Property Details
     propertyType: {

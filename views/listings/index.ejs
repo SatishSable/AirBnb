@@ -29,6 +29,47 @@
       padding: 1.5rem;
       border-radius: 16px;
       box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+      animation: slideUp 0.6s ease-out;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .search-section:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
     }
 
     .search-inputs {
@@ -41,6 +82,19 @@
     .search-input-group {
       display: flex;
       flex-direction: column;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .search-input-group:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .search-input-group:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .search-input-group:nth-child(3) {
+      animation-delay: 0.3s;
     }
 
     .search-input-group label {
@@ -48,18 +102,47 @@
       font-weight: 600;
       color: #222;
       margin-bottom: 0.25rem;
+      transition: color 0.3s ease;
     }
 
-    .search-input-group input,
-    .search-input-group select {
+    .search-input-group:hover label {
+      color: #FF385C;
+    }
+
+    .search-input-group input {
       padding: 0.75rem;
-      border: 1px solid #ddd;
+      border: 2px solid #ddd;
       border-radius: 8px;
       font-size: 0.875rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-input-group input:focus {
+      border-color: #FF385C;
+      box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.15);
+      outline: none;
+      transform: scale(1.02);
+    }
+
+    .search-input-group input:hover {
+      border-color: #FF385C;
+    }
+
+    .search-input-group input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .search-input-group input[type="number"]::-webkit-outer-spin-button,
+    .search-input-group input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
     }
 
     .search-btn {
-      background: linear-gradient(to right, #FF385C, #FF5A5F);
+      background: linear-gradient(135deg, #FF385C, #FF5A5F, #E91E63);
+      background-size: 200% 200%;
       color: white;
       border: none;
       padding: 0.75rem 2rem;
@@ -67,11 +150,26 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease-out 0.4s backwards;
     }
 
     .search-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(255, 56, 92, 0.3);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(255, 56, 92, 0.4);
+      animation: pulse 1s ease infinite;
+    }
+
+    .search-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .search-btn i {
+      margin-right: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .search-btn:hover i {
+      transform: rotate(15deg);
     }
 
     .listings-header {
@@ -133,13 +231,8 @@
 
         <div class="search-input-group">
           <label for="guests">Guests</label>
-          <select id="guests" name="guests" class="form-control">
-            <option value="1">1 guest</option>
-            <option value="2">2 guests</option>
-            <option value="3">3 guests</option>
-            <option value="4">4 guests</option>
-            <option value="5">5+ guests</option>
-          </select>
+          <input type="number" id="guests" name="guests" min="1" max="20" placeholder="Number of guests"
+            class="form-control">
         </div>
 
         <button type="submit" class="search-btn">
@@ -149,75 +242,7 @@
     </form>
   </div>
 
-  <!-- Filters -->
-  <div id="filters" class="d-flex gap-4 mt-3">
-    <div class="filter" data-category="all">
-      <div><i class="fa-solid fa-fire"></i></div>
-      <p>All</p>
-    </div>
 
-    <div class="filter" data-category="Trending">
-      <div><i class="fa-solid fa-fire"></i></div>
-      <p>Trending</p>
-    </div>
-
-    <div class="filter" data-category="Rooms">
-      <div><i class="fa-solid fa-bed"></i></div>
-      <p>Rooms</p>
-    </div>
-
-    <div class="filter" data-category="Iconic Cities">
-      <div><i class="fa-solid fa-mountain-city"></i></div>
-      <p>Iconic Cities</p>
-    </div>
-
-    <div class="filter" data-category="Mountains">
-      <div><i class="fa-solid fa-mountain"></i></div>
-      <p>Mountains</p>
-    </div>
-
-    <div class="filter" data-category="Castles">
-      <div><i class="fa-solid fa-chess-rook"></i></div>
-      <p>Castles</p>
-    </div>
-
-    <div class="filter" data-category="Amazing Pools">
-      <div><i class="fa-solid fa-water-ladder"></i></div>
-      <p>Amazing Pools</p>
-    </div>
-
-    <div class="filter" data-category="Camping">
-      <div><i class="fa-solid fa-campground"></i></div>
-      <p>Camping</p>
-    </div>
-
-    <div class="filter" data-category="Farms">
-      <div><i class="fa-solid fa-tractor"></i></div>
-      <p>Farms</p>
-    </div>
-
-    <div class="filter" data-category="Beach">
-      <div><i class="fa-solid fa-umbrella-beach"></i></div>
-      <p>Beach</p>
-    </div>
-
-    <div class="filter" data-category="Lakefront">
-      <div><i class="fa-solid fa-water"></i></div>
-      <p>Lakefront</p>
-    </div>
-
-    <div class="filter" data-category="Treehouses">
-      <div><i class="fa-solid fa-tree"></i></div>
-      <p>Treehouses</p>
-    </div>
-
-    <div class="tax-toggle">
-      <div class="form-check-reverse form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-        <label class="form-check-label" for="switchCheckDefault">Display total after Taxes</label>
-      </div>
-    </div>
-  </div>
 
   <!-- Listings Header -->
   <div class="listings-header">
@@ -306,36 +331,7 @@
       }
     });
 
-    // Filter Functionality
-    const filters = document.querySelectorAll('.filter');
     const listingCards = document.querySelectorAll('.listing-card');
-
-    filters.forEach(filter => {
-      filter.addEventListener('click', function () {
-        // Remove active class from all filters
-        filters.forEach(f => f.classList.remove('active'));
-
-        // Add active class to clicked filter
-        this.classList.add('active');
-
-        const category = this.getAttribute('data-category');
-        let visibleCount = 0;
-
-        listingCards.forEach(card => {
-          const cardCategory = card.getAttribute('data-category');
-
-          if (category === 'all' || cardCategory === category) {
-            card.parentElement.style.display = 'block';
-            visibleCount++;
-          } else {
-            card.parentElement.style.display = 'none';
-          }
-        });
-
-        // Update count
-        document.getElementById('listingsCount').textContent = visibleCount;
-      });
-    });
 
     // Sort Functionality
     const sortSelect = document.getElementById('sortBy');

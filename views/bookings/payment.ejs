@@ -509,81 +509,136 @@
                             <span>Total</span>
                             <span>₹<%= booking.totalPrice.toLocaleString('en-IN') %></span>
                         </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Success Modal -->
-    <div class="modal-overlay" id="successModal">
-        <div class="modal-content">
-            <div class="success-icon">
-                <i class="fas fa-check"></i>
+        <!-- Success Modal -->
+        <div class="modal-overlay" id="successModal">
+            <div class="modal-content">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2>Booking Confirmed!</h2>
+                <p>Your payment was successful. You will receive a confirmation email shortly.</p>
+                <a href="/bookings" class="modal-btn" id="viewBookingBtn">View My Bookings</a>
             </div>
-            <h2>Booking Confirmed!</h2>
-            <p>Your payment was successful. You will receive a confirmation email shortly.</p>
-            <a href="/bookings" class="modal-btn" id="viewBookingBtn">View My Bookings</a>
         </div>
-    </div>
 
-    <script>
-        function selectMethod(element) {
-            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
-            element.classList.add('selected');
-            element.querySelector('input').checked = true;
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-            const cardForm = document.getElementById('cardForm');
-            const method = element.querySelector('input').value;
-            cardForm.style.display = method === 'card' ? 'block' : 'none';
-        }
+        <script>
+            function selectMethod(element) {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                element.classList.add('selected');
+                element.querySelector('input').checked = true;
 
-        // Format card number with spaces
-        document.getElementById('cardNumber').addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
-            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-            e.target.value = formattedValue;
-        });
-
-        // Format expiry date
-        document.getElementById('cardExpiry').addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length >= 2) {
-                value = value.slice(0, 2) + '/' + value.slice(2);
+                const cardForm = document.getElementById('cardForm');
+                const method = element.querySelector('input').value;
+                cardForm.style.display = method === 'card' ? 'block' : 'none';
             }
-            e.target.value = value;
-        });
 
-        async function processPayment() {
-            const button = document.getElementById('payButton');
-            const originalContent = button.innerHTML;
+            // Format card number with spaces
+            document.getElementById('cardNumber').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+            });
 
-            // Show loading state
-            button.disabled = true;
-            button.innerHTML = '<div class="spinner"></div> Processing...';
+            // Format expiry date
+            document.getElementById('cardExpiry').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2);
+                }
+                e.target.value = value;
+            });
 
-            try {
-                const response = await fetch('/bookings/process-payment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+            async function processPayment() {
+                const button = document.getElementById('payButton');
+                const originalContent = button.innerHTML;
+
+                button.disabled = true;
+                button.innerHTML = '<div class="spinner"></div> Creating order...';
+
+                try {
+                    const orderResp = await fetch('/bookings/create-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const orderData = await orderResp.json();
+                    if (!orderData.success) {
+                        alert('Payment failed: ' + (orderData.message || 'Unable to create order'));
+                        button.disabled = false;
+                        button.innerHTML = originalContent;
+                        return;
                     }
-                });
 
-                const result = await response.json();
+                    const options = {
+                        key: orderData.keyId,
+                        amount: orderData.amount,
+                        currency: orderData.currency,
+                        name: orderData.name,
+                        description: orderData.description,
+                        order_id: orderData.orderId,
+                        handler: async function (response) {
+                            try {
+                                button.innerHTML = '<div class="spinner"></div> Verifying payment...';
+                                const verifyResp = await fetch('/bookings/verify-payment', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        bookingId: orderData.bookingId,
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_signature: response.razorpay_signature
+                                    })
+                                });
 
-                if (result.success) {
-                    // Show success modal
-                    document.getElementById('successModal').classList.add('show');
-                    document.getElementById('viewBookingBtn').href = `/bookings/${result.bookingId}`;
-                } else {
-                    alert('Payment failed: ' + result.message);
+                                const verifyData = await verifyResp.json();
+                                if (verifyData.success) {
+                                    document.getElementById('successModal').classList.add('show');
+                                    document.getElementById('viewBookingBtn').href = `/bookings/${verifyData.bookingId}`;
+                                } else {
+                                    alert('Payment verification failed: ' + (verifyData.message || 'Unknown error'));
+                                    button.disabled = false;
+                                    button.innerHTML = originalContent;
+                                }
+                            } catch (err) {
+                                console.error('Verification error:', err);
+                                alert('Payment verification failed. Please try again.');
+                                button.disabled = false;
+                                button.innerHTML = originalContent;
+                            }
+                        },
+                        prefill: {
+                            name: "<%= currUser && currUser.username ? currUser.username : '' %>",
+                            email: "<%= currUser && currUser.email ? currUser.email : '' %>"
+                        },
+                        theme: {
+                            color: "#FF385C"
+                        }
+                    };
+
+                    button.innerHTML = '<div class="spinner"></div> Opening payment...';
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function () {
+                        alert('Payment failed. Please try again.');
+                        button.disabled = false;
+                        button.innerHTML = originalContent;
+                    });
+                    rzp.open();
+
+                } catch (error) {
+                    console.error('Payment error:', error);
+                    alert('Payment failed. Please try again.');
                     button.disabled = false;
                     button.innerHTML = originalContent;
                 }
-            } catch (error) {
-                console.error('Payment error:', error);
-                alert('Payment failed. Please try again.');
-                button.disabled = false;
-                button.innerHTML = originalContent;
             }
-        }
-    </script>
+        </script>

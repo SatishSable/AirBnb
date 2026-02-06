@@ -396,8 +396,8 @@
     </div>
 
     <script>
-        const maptoken = "<%= mapBoxToken || '' %>";
-        const dhaba = <% - JSON.stringify(dhaba) %>;
+        var maptoken = "<%- mapBoxToken || '' %>";
+        var dhaba = <%- JSON.stringify(dhaba) %>;
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {

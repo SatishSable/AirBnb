@@ -7,11 +7,20 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Check if maptoken and listing are defined
+    const data = (typeof listing !== 'undefined' && listing)
+        ? listing
+        : ((typeof vehicle !== 'undefined' && vehicle)
+            ? vehicle
+            : ((typeof dhaba !== 'undefined' && dhaba)
+                ? dhaba
+                : null));
+
+    // Check if maptoken and data are defined
     console.log('Map Token Check:', {
         tokenDefined: typeof maptoken !== 'undefined',
         tokenValue: typeof maptoken !== 'undefined' ? maptoken.substring(0, 10) + '...' : 'undefined',
-        tokenLength: typeof maptoken !== 'undefined' ? maptoken.length : 0
+        tokenLength: typeof maptoken !== 'undefined' ? maptoken.length : 0,
+        dataType: data ? (data.vehicleType ? 'vehicle' : (data.cuisine ? 'dhaba' : 'listing')) : 'none'
     });
 
     if (typeof maptoken === 'undefined' || maptoken === '' || maptoken === 'undefined') {
@@ -20,15 +29,15 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    if (typeof listing === 'undefined' || !listing) {
-        console.error('Listing data not found');
+    if (!data) {
+        console.error('Map data not found');
         return;
     }
 
-    // Check if listing has geometry
-    if (!listing.geometry || !listing.geometry.coordinates) {
-        console.error('Listing geometry not found');
-        mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Location not available for this listing</p>';
+    // Check if data has geometry
+    if (!data.geometry || !data.geometry.coordinates) {
+        console.error('Geometry not found');
+        mapContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #717171;">Location not available</p>';
         return;
     }
 
@@ -37,7 +46,8 @@ document.addEventListener('DOMContentLoaded', function () {
         mapboxgl.accessToken = maptoken;
 
         // Validate coordinates
-        const coordinates = listing.geometry.coordinates;
+        const coordinates = data.geometry.coordinates;
+
         if (!Array.isArray(coordinates) || coordinates.length < 2) {
             throw new Error('Invalid coordinates');
         }
@@ -73,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 new mapboxgl.Popup({ offset: 25, closeButton: false })
                     .setHTML(`
                 <div style="padding: 0.5rem;">
-                    <h4 style="margin: 0 0 0.5rem; font-size: 1rem; font-weight: 600;">${listing.title}</h4>
+                    <h4 style="margin: 0 0 0.5rem; font-size: 1rem; font-weight: 600;">${data.title}</h4>
                     <p style="margin: 0; color: #717171; font-size: 0.875rem;">
-                        ${listing.location || 'Location'}, ${listing.country || ''}
+                        ${data.mapboxPlaceName || `${data.location || 'Location'}${data.country ? `, ${data.country}` : ''}`}
                     </p>
                     <p style="margin: 0.5rem 0 0; font-size: 0.75rem; color: #717171;">
                         Exact location provided after booking
@@ -101,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div style="padding: 2rem; text-align: center; background: #f7f7f7; border-radius: 12px;">
                 <i class="fas fa-map-marked-alt" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
                 <p style="color: #717171; margin: 0;">Unable to load map</p>
-                <p style="color: #b0b0b0; font-size: 0.875rem; margin-top: 0.5rem;">${listing.location || ''}, ${listing.country || ''}</p>
+                <p style="color: #b0b0b0; font-size: 0.875rem; margin-top: 0.5rem;">${data.location || ''}${data.country ? `, ${data.country}` : ''}</p>
             </div>
         `;
     }
