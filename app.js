@@ -36,7 +36,8 @@ async function main() {
 }
 main()
   .then(() => {
-    console.log("✅ Connected to MongoDB");
+    const isAtlas = dbUrl.includes("mongodb+srv");
+    console.log(`✅ Connected to MongoDB ${isAtlas ? "(ATLAS)" : "(LOCAL)"}`);
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
