@@ -56,6 +56,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/videos", express.static(path.join(__dirname, "videos")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // EJS setup
 app.engine("ejs", ejsMate);
@@ -180,9 +182,9 @@ app.use((req, res, next) => {
 
 // Home page route
 app.get("/", wrapAsync(async (req, res) => {
-  const allListings = await Listing.find({}).limit(8);
-  const allVehicles = await Vehicle.find({}).limit(4);
-  const allDhabas = await Dhaba.find({}).limit(4);
+  const allListings = await Listing.find({}).limit(20);
+  const allVehicles = await Vehicle.find({}).limit(20);
+  const allDhabas = await Dhaba.find({}).limit(20);
   res.render("home.ejs", { allListings, allVehicles, allDhabas });
 }));
 

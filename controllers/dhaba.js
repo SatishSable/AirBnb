@@ -1,5 +1,5 @@
 const Dhaba = require("../models/dhaba.js");
-const mapBoxToken = process.env.Map_Token;
+const mapBoxToken = process.env.Map_Token || "";
 
 module.exports.index = async (req, res) => {
     const { category, cuisine } = req.query;

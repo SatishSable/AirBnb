@@ -1,7 +1,9 @@
 const Listing = require("../models/listing");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const { listingSchema } = require("../schema.js");
-const mapBoxToken = process.env.Map_Token;
+const mapBoxToken = process.env.Map_Token || ""; 
+// We use a fallback empty string to prevent the SDK from throwing and crashing the process on load
+// if the token is missing. Geocoding will still fail later if the token is invalid.
 const geocodingClient = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req, res) => {
