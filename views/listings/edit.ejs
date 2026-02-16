@@ -1,40 +1,317 @@
 <% layout("layouts/boilerplate")%>
-  <div class="row offset-2 mt-2">
-    <div class="col-8">
 
-      <body>
-        <br>
-        <h2>Edit Your Listing</h2>
-        <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation"
-          enctype="multipart/form-data">
-          <div class="mb-3">
-            <label for="title" class="form-label">Title:</label>
-            <input type="text" id="title" name="listing[title]" value="<%= listing.title %>" class="form-control"
-              required>
-            <div class="invalid-feedback">please enter a title</div>
-          </div>
-          <div class="mb-3">
-            <label for="description" class="form-label">Description:</label>
-            <textarea id="description" name="listing[description]" class="form-control"
-              required><%= listing.description %></textarea>
-            <div class="invalid-feedback">please enter a description</div>
-          </div>
-          <div class="mb-3">
-            Current Images:<br>
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+  <style>
+    /* ===== ANIMATED EDIT FORM PAGE ===== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% center;
+      }
+
+      100% {
+        background-position: 200% center;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .form-page {
+      max-width: 720px;
+      margin: 2.5rem auto;
+      padding: 0 1rem;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .form-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .form-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #1a1a1a, #555);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: slideInLeft 0.6s ease 0.2s both;
+    }
+
+    .form-subtitle {
+      color: #717171;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+      animation: slideInLeft 0.6s ease 0.3s both;
+    }
+
+    .form-divider {
+      height: 3px;
+      background: linear-gradient(90deg, #C9A227, #FF385C, #C9A227);
+      background-size: 200% auto;
+      animation: shimmer 3s linear infinite;
+      border-radius: 2px;
+      margin-bottom: 2rem;
+      width: 80px;
+    }
+
+    /* Staggered field animations */
+    .form-field {
+      animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .form-field:nth-child(1) {
+      animation-delay: 0.15s;
+    }
+
+    .form-field:nth-child(2) {
+      animation-delay: 0.25s;
+    }
+
+    .form-field:nth-child(3) {
+      animation-delay: 0.35s;
+    }
+
+    .form-field:nth-child(4) {
+      animation-delay: 0.45s;
+    }
+
+    .form-field:nth-child(5) {
+      animation-delay: 0.55s;
+    }
+
+    .form-field:nth-child(6) {
+      animation-delay: 0.65s;
+    }
+
+    .form-field:nth-child(7) {
+      animation-delay: 0.75s;
+    }
+
+    /* Input styling */
+    .form-card .form-control {
+      border: 2px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #fafafa;
+    }
+
+    .form-card .form-control:focus {
+      border-color: #FF385C;
+      box-shadow: 0 0 0 4px rgba(255, 56, 92, 0.1);
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .form-card .form-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #333;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Current images gallery */
+    .current-images {
+      background: #f8f8f8;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .current-images-label {
+      font-weight: 600;
+      color: #555;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.75rem;
+    }
+
+    .current-images img {
+      animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+
+    .current-images img:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    .current-images img:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    .current-images img:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    .current-images img:nth-child(4) {
+      animation-delay: 0.5s;
+    }
+
+    .current-images img:nth-child(5) {
+      animation-delay: 0.6s;
+    }
+
+    .current-images img:hover {
+      transform: scale(1.08);
+      border-color: #FF385C;
+      box-shadow: 0 4px 15px rgba(255, 56, 92, 0.2);
+    }
+
+    /* Photo upload section */
+    .photo-section {
+      background: #f8f8f8;
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 2px dashed #ddd;
+      transition: all 0.3s ease;
+    }
+
+    .photo-section:hover {
+      border-color: #FF385C;
+      background: #fff5f7;
+    }
+
+    .photo-section .form-control[type="file"] {
+      background: #fff;
+    }
+
+    /* Submit button */
+    .btn-submit {
+      background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      animation: fadeInUp 0.5s ease 0.85s both;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      color: white;
+    }
+
+    .btn-submit:hover::before {
+      left: 100%;
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+  </style>
+
+  <div class="form-page">
+    <div class="form-card">
+      <h3>✏️ Edit Your Listing</h3>
+      <p class="form-subtitle">Update your listing details to attract more guests</p>
+      <div class="form-divider"></div>
+
+      <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation"
+        enctype="multipart/form-data">
+
+        <div class="form-field mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" id="title" name="listing[title]" value="<%= listing.title %>" class="form-control"
+            required>
+          <div class="invalid-feedback">Please enter a title</div>
+        </div>
+
+        <div class="form-field mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" name="listing[description]" class="form-control" rows="3"
+            required><%= listing.description %></textarea>
+          <div class="invalid-feedback">Please enter a description</div>
+        </div>
+
+        <div class="form-field mb-3">
+          <div class="current-images">
+            <p class="current-images-label">📷 Current Images</p>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
               <% if(listing.images && listing.images.length> 0) { %>
                 <% listing.images.forEach((img, i)=> { %>
                   <img src="<%= img.url %>" alt="Listing image <%= i+1 %>"
-                    style="width: 100px; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd;">
+                    style="width: 100px; height: 80px; object-fit: cover;">
                   <% }); %>
                     <% } else if(listing.image && listing.image.url) { %>
                       <img src="<%= original.replace('/upload/', '/upload/w_350,h_300,c_fill,q_auto,f_auto/') %>"
-                        alt="Listing image" class="img-fluid rounded shadow-sm">
+                        alt="Listing image" style="width: 100px; height: 80px; object-fit: cover;">
                       <% } %>
             </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Upload New Images (5 photos)</label>
+        </div>
+
+        <div class="form-field mb-3">
+          <label class="form-label">📸 Upload New Images (5 photos)</label>
+          <div class="photo-section">
             <div class="mb-2">
               <label class="form-label text-muted small">Photo 1 (Main Photo)</label>
               <input name="listing[image]" type="file" class="form-control" accept="image/*">
@@ -58,30 +335,31 @@
             <small class="text-muted">Upload new photos to replace current ones. Leave empty to keep existing
               photos.</small>
           </div>
-          <div class="row">
-            <div class="mb-3 col-md-4">
-              <label for="price" class="form-label">Price:</label>
-              <input type="number" id="price" name="listing[price]" class="form-control" value="<%= listing.price %>"
-                required>
-              <div class="invalid-feedback">please enter a price</div>
-            </div>
-            <div class="mb-3 col-md-4">
-              <label for="country" class="form-label">Country:</label>
-              <input type="text" id="country" name="listing[country]" class="form-control"
-                value="<%= listing.country %>" required>
-              <div class="invalid-feedback">please enter a country</div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="location" class="form-label">Location:</label>
-            <input type="text" id="location" name="listing[location]" class="form-control"
-              value="<%= listing.location %>" required>
-            <div class="invalid-feedback">please enter a location</div>
-          </div>
+        </div>
 
-          <button type="submit" class=" btn btn-dark add-btn mb-3">Edit</button>
+        <div class="form-field row">
+          <div class="mb-3 col-md-4">
+            <label for="price" class="form-label">💰 Price</label>
+            <input type="number" id="price" name="listing[price]" class="form-control" value="<%= listing.price %>"
+              required>
+            <div class="invalid-feedback">Please enter a price</div>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="country" class="form-label">🌍 Country</label>
+            <input type="text" id="country" name="listing[country]" class="form-control" value="<%= listing.country %>"
+              required>
+            <div class="invalid-feedback">Please enter a country</div>
+          </div>
+        </div>
 
-        </form>
-      </body>
+        <div class="form-field mb-4">
+          <label for="location" class="form-label">📍 Location</label>
+          <input type="text" id="location" name="listing[location]" class="form-control" value="<%= listing.location %>"
+            required>
+          <div class="invalid-feedback">Please enter a location</div>
+        </div>
+
+        <button type="submit" class="btn btn-submit">Update Listing →</button>
+      </form>
     </div>
   </div>
