@@ -313,14 +313,17 @@
     </div>
 
     <!-- Image Gallery -->
+    <!-- Image Gallery -->
     <div class="show-img-gallery">
-      <img
-        src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' %>"
-        alt="<%= listing.title %>">
-      <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400" alt="Room view 1">
-      <img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400" alt="Room view 2">
-      <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400" alt="Room view 3">
-      <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400" alt="Room view 4">
+      <% let galleryImages=[]; if (listing.images && listing.images.length> 0) {
+        galleryImages = listing.images.map(img => img.url);
+        } else if (listing.image && listing.image.url) {
+        galleryImages = [listing.image.url];
+        }
+        %>
+        <% galleryImages.forEach((imgUrl, i)=> { %>
+          <img src="<%= imgUrl %>" alt="<%= listing.title %> - Photo <%= i + 1 %>">
+          <% }); %>
     </div>
 
     <!-- Main Content -->
@@ -588,6 +591,6 @@
 
   <script>
     var maptoken = "<%- mapBoxToken || '' %>";
-    var listing = <%- JSON.stringify(listing) %>;
+    var listing = <% - JSON.stringify(listing) %>;
   </script>
   <script src="/js/map.js"></script>

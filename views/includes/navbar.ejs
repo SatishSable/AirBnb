@@ -10,19 +10,31 @@
   }
 
   .navbar {
-    position: absolute;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    background: transparent;
+    background: rgba(26, 26, 26, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: none;
-    padding: 1.5rem 3rem;
-    box-shadow: none;
+    padding: 1rem 3rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Solid navbar when scrolling */
+  /* When page has a hero section, navbar starts transparent and absolute */
+  .navbar.navbar-hero {
+    position: absolute;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    padding: 1.5rem 3rem;
+  }
+
+  /* Solid navbar when scrolling (for hero pages after scroll) */
   .navbar.navbar-solid {
     position: fixed;
     background: rgba(26, 26, 26, 0.97);
@@ -35,6 +47,8 @@
   /* Transparent navbar over hero */
   .navbar.navbar-transparent {
     background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border: none !important;
     box-shadow: none !important;
   }
@@ -224,6 +238,7 @@
       opacity: 0;
       transform: translateY(-8px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -275,7 +290,7 @@
     .search-container {
       display: none;
     }
-    
+
     .navbar {
       padding: 1rem 1.5rem;
     }
@@ -309,7 +324,34 @@
   }
 </style>
 
-<nav class="navbar navbar-expand-lg sticky-top">
+<nav class="navbar navbar-expand-lg">
+  <!-- Navbar hero detection script -->
+  <script>
+    (function () {
+      // Wait for DOM to be ready
+      document.addEventListener('DOMContentLoaded', function () {
+        const navbar = document.querySelector('.navbar');
+        const heroSection = document.querySelector('.hero, .stays-hero, .vehicles-hero, .dhabas-hero, .homepage-hero, [class*="-hero"]');
+
+        if (heroSection && navbar) {
+          // Hero page: make navbar transparent and absolute
+          navbar.classList.add('navbar-hero');
+
+          // Handle scroll: switch to solid when scrolled past hero
+          window.addEventListener('scroll', function () {
+            const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+            if (window.scrollY > 100) {
+              navbar.classList.remove('navbar-hero');
+              navbar.classList.add('navbar-solid');
+            } else {
+              navbar.classList.add('navbar-hero');
+              navbar.classList.remove('navbar-solid');
+            }
+          });
+        }
+      });
+    })();
+  </script>
   <div class="container-fluid">
     <!-- Brand -->
     <a class="navbar-brand" href="/">
@@ -388,7 +430,8 @@
                   </li>
                   <li><a class="dropdown-item" href="/listings/new"><i class="fas fa-plus me-2"></i>Add Stays</a></li>
                   <li><a class="dropdown-item" href="/vehicles/new"><i class="fas fa-car me-2"></i>Add Vehicle</a></li>
-                  <li><a class="dropdown-item" href="/dhabas/new"><i class="fas fa-utensils me-2"></i>Add Dining</a></li>
+                  <li><a class="dropdown-item" href="/dhabas/new"><i class="fas fa-utensils me-2"></i>Add Dining</a>
+                  </li>
                   <% if (currUser.role==='admin' ) { %>
                     <li>
                       <hr class="dropdown-divider">

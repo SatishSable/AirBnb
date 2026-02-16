@@ -9,7 +9,15 @@ module.exports.singup = async (req, res) => {
     let { username, email, password } = req.body;
     const newUser = new User({ username, email });
     const registerUser = await User.register(newUser, password);
-    console.log(registerUser);
+
+    // Log successful user creation to MongoDB Atlas
+    console.log("✅ NEW USER CREATED IN MONGODB ATLAS:");
+    console.log(`   - Username: ${registerUser.username}`);
+    console.log(`   - Email: ${registerUser.email}`);
+    console.log(`   - User ID: ${registerUser._id}`);
+    console.log(`   - Created At: ${registerUser.createdAt}`);
+    console.log(`   - Role: ${registerUser.role}`);
+
     req.login(registerUser, (err) => {
       if (err) {
         return next(err);
@@ -18,6 +26,7 @@ module.exports.singup = async (req, res) => {
       res.redirect("/listings");
     })
   } catch (e) {
+    console.log("❌ USER CREATION FAILED:", e.message);
     req.flash("error", e.message);
     res.redirect("/signup");
   }

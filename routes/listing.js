@@ -14,7 +14,7 @@ const listingController = require("../controllers/listing.js");
 router
     .route("/")
     .get(wrapAsync(listingController.index))
-    .post(isLoggedIn, upload.single('listing[image]'), validateListing, wrapAsync(listingController.createListing));
+    .post(isLoggedIn, upload.array('listing[image]', 5), validateListing, wrapAsync(listingController.createListing));
 
 
 // New route - show form
@@ -27,7 +27,7 @@ router.get("/search", wrapAsync(listingController.searchListings));
 router
     .route("/:id")
     .get(wrapAsync(listingController.showListing))
-    .put(isLoggedIn, isOwner, upload.single('listing[image]'), validateListing, wrapAsync(listingController.updateForm))
+    .put(isLoggedIn, isOwner, upload.array('listing[image]', 5), validateListing, wrapAsync(listingController.updateForm))
     .delete(isLoggedIn, isOwner, wrapAsync(listingController.deleteListing));
 
 

@@ -1,7 +1,7 @@
 const Listing = require("../models/listing");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const { listingSchema } = require("../schema.js");
-const mapBoxToken = process.env.Map_Token || ""; 
+const mapBoxToken = process.env.Map_Token || "";
 // We use a fallback empty string to prevent the SDK from throwing and crashing the process on load
 // if the token is missing. Geocoding will still fail later if the token is invalid.
 const geocodingClient = mbxGeocoding({ accessToken: mapBoxToken });
@@ -67,6 +67,7 @@ module.exports.showListing = async (req, res) => {
 
 
 
+
 module.exports.createListing = async (req, res, next) => {
   // Geocode location with Mapbox
   let response = await geocodingClient.forwardGeocode({
@@ -74,14 +75,20 @@ module.exports.createListing = async (req, res, next) => {
     limit: 1,
   }).send();
 
-  // Image upload info
-  let url = req.file.path;
-  let filename = req.file.filename;
+  // Handle multiple image uploads
+  let uploadedImages = [];
+  if (req.files && req.files.length > 0) {
+    uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+  }
 
   // Create new listing
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
-  newListing.image = { url, filename };
+  newListing.images = uploadedImages;
+  // Backward compatibility: set single image to first uploaded photo
+  if (uploadedImages.length > 0) {
+    newListing.image = uploadedImages[0];
+  }
 
   // Always set geometry (fallback if no result)
   if (response.body.features.length > 0) {
@@ -106,10 +113,16 @@ module.exports.createListing = async (req, res, next) => {
 module.exports.renderEditForm = async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
+  if (!listing) {
+    req.flash("error", "Listing not found");
+    return res.redirect("/listings");
+  }
   req.flash("success", "listing Edited successfully!");
 
-  let original = listing.image.url;
-  original = original.replace("/uploads/", "/upload/h_300/");
+  let original = listing.image && listing.image.url ? listing.image.url : '';
+  if (original) {
+    original = original.replace("/uploads/", "/upload/h_300/");
+  }
   res.render("listings/edit.ejs", { listing, original });
 }
 
@@ -139,14 +152,12 @@ module.exports.updateForm = async (req, res) => {
     }
   }
 
-  // Update image ONLY if a new file is uploaded
-  if (req.file) {
-    listing.image = {
-      url: req.file.path,
-      filename: req.file.filename,
-    };
+  // Update images if new files are uploaded
+  if (req.files && req.files.length > 0) {
+    let uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    listing.images = uploadedImages;
+    listing.image = uploadedImages[0]; // backward compat
     await listing.save();
-
   }
 
   req.flash("success", "Listing updated successfully!");
