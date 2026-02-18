@@ -15,7 +15,7 @@ module.exports.dashboard = async (req, res) => {
     // Recent activity
     const recentUsers = await User.find().sort({ createdAt: -1 }).limit(5);
     const recentBookings = await Booking.find()
-        .populate("user")
+        .populate("guest")
         .populate("listing")
         .populate("vehicle")
         .populate("dhaba")
@@ -97,7 +97,7 @@ module.exports.deleteDhaba = async (req, res) => {
 // Bookings Management
 module.exports.allBookings = async (req, res) => {
     const bookings = await Booking.find()
-        .populate("user")
+        .populate("guest")
         .populate("listing")
         .populate("vehicle")
         .populate("dhaba")

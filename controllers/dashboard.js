@@ -14,7 +14,7 @@ module.exports.dashboard = async (req, res) => {
     const myDhabas = await Dhaba.find({ owner: userId });
 
     // Get user's bookings
-    const myBookings = await Booking.find({ user: userId })
+    const myBookings = await Booking.find({ guest: userId })
         .populate("listing")
         .populate("vehicle")
         .populate("dhaba")
@@ -62,7 +62,7 @@ module.exports.myDhabas = async (req, res) => {
 
 // My Bookings
 module.exports.myBookings = async (req, res) => {
-    const bookings = await Booking.find({ user: req.user._id })
+    const bookings = await Booking.find({ guest: req.user._id })
         .populate("listing")
         .populate("vehicle")
         .populate("dhaba")
@@ -80,7 +80,7 @@ module.exports.cancelBooking = async (req, res) => {
         return res.redirect("/dashboard/bookings");
     }
 
-    if (!booking.user.equals(req.user._id)) {
+    if (!booking.guest.equals(req.user._id)) {
         req.flash("error", "You can only cancel your own bookings");
         return res.redirect("/dashboard/bookings");
     }

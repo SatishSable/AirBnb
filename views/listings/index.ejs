@@ -1,807 +1,484 @@
 <% layout("layouts/boilerplate")%>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Bebas+Neue&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        /* Hero Section */
+        .listings-hero {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            margin-left: calc(-50vw + 50%);
+            margin-top: -1rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
+        }
 
-<style>
-    /* ===================================
-       LUXURY STAYS PAGE - FOUR SEASONS
-       =================================== */
-    
-    :root {
-        --luxury-dark: #1a1a1a;
-        --luxury-gold: #c9a227;
-        --luxury-gold-light: #d4b84a;
-        --luxury-cream: #f8f6f3;
-        --luxury-text: #333;
-        --luxury-text-light: #666;
-        --font-serif: 'Playfair Display', Georgia, serif;
-        --font-elegant: 'Cormorant Garamond', Georgia, serif;
-        --font-sans: 'Plus Jakarta Sans', sans-serif;
-        --font-display: 'Bebas Neue', cursive;
-        --font-body: 'Montserrat', sans-serif;
-    }
+        .listings-hero video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.6) contrast(1.1);
+        }
 
-    /* Remove default container padding for full-width hero */
-    .container {
-        max-width: 100%;
-        padding: 0;
-    }
+        .listings-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, 
+                rgba(0, 0, 0, 0.4) 0%,
+                rgba(0, 0, 0, 0.1) 40%,
+                rgba(0, 0, 0, 0.6) 100%
+            );
+            z-index: 1;
+        }
 
-    /* ===================================
-       VIDEO HERO SECTION
-       =================================== */
-    
-    .stays-hero {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-        margin-left: calc(-50vw + 50%);
-        margin-top: -1rem;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .listings-hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+            padding: 0 2rem;
+            text-align: center;
+            animation: luxuryFadeIn 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    .stays-hero__video {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        min-width: 100%;
-        min-height: 100%;
-        width: auto;
-        height: auto;
-        transform: translate(-50%, -50%);
-        object-fit: cover;
-        z-index: 1;
-    }
+        @keyframes luxuryFadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .stays-hero__overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.4) 0%,
-            rgba(0, 0, 0, 0.5) 50%,
-            rgba(0, 0, 0, 0.6) 100%
-        );
-        z-index: 2;
-    }
+        .listings-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 400;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            color: #FFFFFF;
+            line-height: 1.1;
+            letter-spacing: 0.02em;
+        }
 
-    .stays-hero__content {
-        position: relative;
-        z-index: 3;
-        text-align: center;
-        color: white;
-        padding: 2rem;
-        max-width: 800px;
-    }
+        .listings-hero p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            font-weight: 300;
+            opacity: 0.9;
+            margin: 0 auto 3rem;
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+            max-width: 700px;
+        }
 
-    .stays-hero__eyebrow {
-        font-family: var(--font-sans);
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--luxury-gold-light);
-        margin-bottom: 1.5rem;
-    }
-
-    .stays-hero__title {
-        font-family: var(--font-serif);
-        font-size: clamp(2.5rem, 5vw, 4rem);
-        font-weight: 400;
-        line-height: 1.2;
-        margin-bottom: 1.5rem;
-        letter-spacing: -0.02em;
-    }
-
-    .stays-hero__subtitle {
-        font-family: var(--font-elegant);
-        font-size: 1.1rem;
-        font-weight: 300;
-        opacity: 0.9;
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.7;
-    }
-
-    /* Hero Buttons */
-    .hero-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-top: 2rem;
-    }
-
-    .stays-hero__btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 2.5rem;
-        font-family: var(--font-sans);
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        text-decoration: none;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        background: transparent;
-        color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-
-    .stays-hero__content a.stays-hero__btn:hover {
-        background: white !important;
-        color: #1a1a2e !important;
-        border-color: white !important;
-    }
-
-    .stays-hero__btn i {
-        font-size: 0.7rem;
-        transition: transform 0.3s ease;
-    }
-
-    .stays-hero__btn:hover i {
-        transform: translateX(4px);
-    }
-
-    /* ===================================
-       LUXURY SEARCH BAR
-       =================================== */
-    
-    .search-section {
-        max-width: 1000px;
-        margin: -3rem auto 3rem;
-        background: white;
-        padding: 0;
-        border-radius: 0;
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-        position: relative;
-        z-index: 10;
-    }
-
-    .search-section:hover {
-        transform: none;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    }
-
-    .search-bar {
-        display: flex;
-        align-items: stretch;
-    }
-
-    .search-bar__field {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 1.25rem 1.5rem;
-        border-right: 1px solid #e5e5e5;
-        flex: 1;
-        min-width: 0;
-    }
-
-    .search-bar__field:last-of-type {
-        border-right: none;
-    }
-
-    .search-bar__field.location {
-        flex: 2;
-    }
-
-    .search-bar__label {
-        font-family: var(--font-sans);
-        font-size: 0.65rem;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        color: var(--luxury-dark);
-        margin-bottom: 0.5rem;
-    }
-
-    .search-bar__input {
-        font-family: var(--font-sans);
-        font-size: 0.9rem;
-        color: var(--luxury-text-light);
-        border: none;
-        outline: none;
-        background: transparent;
-        width: 100%;
-        padding: 0;
-    }
-
-    .search-bar__input::placeholder {
-        color: #999;
-    }
-
-    .search-bar__input[type="date"] {
-        cursor: pointer;
-    }
-
-    .search-bar__input[type="number"] {
-        -moz-appearance: textfield;
-        appearance: textfield;
-    }
-
-    .search-bar__input[type="number"]::-webkit-outer-spin-button,
-    .search-bar__input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        appearance: none;
-    }
-
-    .search-bar__submit {
-        background: var(--luxury-dark);
-        color: white;
-        border: none;
-        padding: 1.25rem 2.5rem;
-        font-family: var(--font-sans);
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: background 0.3s ease;
-        white-space: nowrap;
-    }
-
-    .search-bar__submit:hover {
-        background: #333;
-    }
-
-    /* ===================================
-       SECTION DIVIDER
-       =================================== */
-    
-    .section-divider {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        padding: 3rem 0;
-    }
-
-    .section-divider__line {
-        width: 60px;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--luxury-gold), transparent);
-    }
-
-    .section-divider__icon {
-        color: var(--luxury-gold);
-        font-size: 0.9rem;
-    }
-
-    /* ===================================
-       LISTINGS HEADER
-       =================================== */
-    
-    .listings-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 0 2rem;
-        max-width: 1400px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .listings-header__title {
-        font-family: var(--font-serif);
-        font-size: 1.75rem;
-        font-weight: 400;
-        color: var(--luxury-dark);
-    }
-
-    .listings-header__count {
-        font-family: var(--font-sans);
-        font-size: 0.85rem;
-        color: var(--luxury-text-light);
-        margin-top: 0.25rem;
-    }
-
-    .sort-options {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-    }
-
-    .sort-options label {
-        font-family: var(--font-sans);
-        font-size: 0.8rem;
-        color: var(--luxury-text-light);
-    }
-
-    .sort-options select {
-        padding: 0.6rem 1rem;
-        border: 1px solid #ddd;
-        border-radius: 0;
-        font-family: var(--font-sans);
-        font-size: 0.85rem;
-        background: white;
-        cursor: pointer;
-    }
-
-    /* ===================================
-       LUXURY PROPERTY CARDS
-       =================================== */
-    
-    .properties-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 2rem;
-        padding: 0 2rem 4rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .property-card {
-        background: white;
-        border-radius: 0;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        text-decoration: none;
-        color: inherit;
-        display: block;
-    }
-
-    .property-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    .property-card__image-wrapper {
-        position: relative;
-        overflow: hidden;
-        aspect-ratio: 4/3;
-    }
-
-    .property-card__image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .property-card:hover .property-card__image {
-        transform: scale(1.08);
-    }
-
-    .property-card__overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            to top,
-            rgba(0, 0, 0, 0.4) 0%,
-            transparent 50%
-        );
-        opacity: 0;
-        transition: opacity 0.4s ease;
-    }
-
-    .property-card:hover .property-card__overlay {
-        opacity: 1;
-    }
-
-    .property-card__wishlist {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        width: 36px;
-        height: 36px;
-        background: rgba(255, 255, 255, 0.95);
-        border: none;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 5;
-    }
-
-    .property-card__wishlist:hover {
-        transform: scale(1.1);
-        background: white;
-    }
-
-    .property-card__wishlist i {
-        color: #666;
-        font-size: 0.9rem;
-        transition: color 0.3s;
-    }
-
-    .property-card__wishlist.active i {
-        color: #e74c3c;
-    }
-
-    .property-card__badge {
-        position: absolute;
-        top: 1rem;
-        left: 1rem;
-        background: var(--luxury-gold);
-        color: white;
-        padding: 0.4rem 0.8rem;
-        font-family: var(--font-sans);
-        font-size: 0.65rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        z-index: 5;
-    }
-
-    .property-card__content {
-        padding: 1.5rem;
-    }
-
-    .property-card__location {
-        font-family: var(--font-sans);
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        color: var(--luxury-gold);
-        margin-bottom: 0.5rem;
-    }
-
-    .property-card__title {
-        font-family: var(--font-serif);
-        font-size: 1.25rem;
-        font-weight: 400;
-        color: var(--luxury-dark);
-        margin-bottom: 0.75rem;
-        line-height: 1.3;
-    }
-
-    .property-card__details {
-        font-family: var(--font-sans);
-        font-size: 0.85rem;
-        color: var(--luxury-text-light);
-        margin-bottom: 1rem;
-    }
-
-    .property-card__footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 1rem;
-        border-top: 1px solid #eee;
-    }
-
-    .property-card__price {
-        font-family: var(--font-sans);
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--luxury-dark);
-    }
-
-    .property-card__price span {
-        font-weight: 400;
-        font-size: 0.85rem;
-        color: var(--luxury-text-light);
-    }
-
-    .property-card__tax {
-        font-family: var(--font-sans);
-        font-size: 0.75rem;
-        color: #999;
-        display: none;
-    }
-
-    .property-card__rating {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        font-family: var(--font-sans);
-        font-size: 0.85rem;
-        color: var(--luxury-dark);
-    }
-
-    .property-card__rating i {
-        color: var(--luxury-gold);
-        font-size: 0.8rem;
-    }
-
-    /* ===================================
-       RESPONSIVE DESIGN
-       =================================== */
-    
-    @media (max-width: 992px) {
-        .search-bar {
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
             flex-wrap: wrap;
         }
-        
-        .search-bar__field {
-            flex: 1 1 calc(50% - 1px);
-            border-bottom: 1px solid #e5e5e5;
-        }
-        
-        .search-bar__field.location {
-            flex: 1 1 100%;
-        }
-        
-        .search-bar__submit {
-            flex: 1 1 100%;
-        }
-        
-        .properties-grid {
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        }
-    }
 
-    @media (max-width: 768px) {
-        .stays-hero {
-            height: 50vh;
-            min-height: 400px;
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .hero-btn:hover {
+            background: white;
+            color: #1A1A1A;
+            border-color: white;
+            transform: translateY(-2px);
         }
         
-        .search-bar__field {
-            flex: 1 1 100%;
+        .hero-btn i {
+            transition: transform 0.3s ease;
         }
         
-        .listings-header {
-            flex-direction: column;
+        .hero-btn:hover i { transform: translateX(4px); }
+
+        /* Page Content */
+        .listings-page { padding: 2rem 0; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
             gap: 1rem;
-            align-items: flex-start;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .listings-count {
+            color: #717171;
+            font-size: 0.95rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.6rem 1.25rem;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #222;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: linear-gradient(135deg, #1A1A1A, #333);
+            color: white;
+            border-color: #1A1A1A;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0, 0.2);
         }
         
-        .properties-grid {
-            grid-template-columns: 1fr;
-            padding: 0 1rem 3rem;
+        .filter-tab i { margin-right: 0.5rem; }
+
+        /* Listing Grid */
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
         }
-    }
-</style>
 
-<!-- Video Hero Section -->
-<section class="stays-hero">
-    <video class="stays-hero__video" autoplay loop muted playsinline>
-        <source src="/videos/hotelBackground.webm" type="video/webm">
-        <source src="/secondBackground.mp4" type="video/mp4">
-    </video>
-    <div class="stays-hero__overlay"></div>
-    
-    <div class="stays-hero__content">
-        <p class="stays-hero__eyebrow">Curated Accommodations</p>
-        <h1 class="stays-hero__title">Exceptional Stays Await</h1>
-        <p class="stays-hero__subtitle">
-            Discover handpicked properties from trusted hosts, each offering 
-            a unique blend of comfort, style, and authentic local experiences.
-        </p>
-        <div class="hero-buttons">
-            <a href="/listings/new" class="stays-hero__btn" style="background: transparent; color: white; border: 1px solid rgba(255, 255, 255, 0.6); padding: 1rem 2.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease;" onmouseover="this.style.background='white'; this.style.color='black'; this.style.borderColor='white';" onmouseout="this.style.background='transparent'; this.style.color='white'; this.style.borderColor='rgba(255, 255, 255, 0.6)';">
-                <i class="fas fa-plus"></i> List Your Property
-            </a>
-            <a href="/map?type=listings" class="stays-hero__btn" style="background: transparent; color: white; border: 1px solid rgba(255, 255, 255, 0.6); padding: 1rem 2.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease;" onmouseover="this.style.background='white'; this.style.color='black'; this.style.borderColor='white';" onmouseout="this.style.background='transparent'; this.style.color='white'; this.style.borderColor='rgba(255, 255, 255, 0.6)';">
-                <i class="fas fa-map-marker-alt"></i> Map View
-            </a>
-        </div>
-    </div>
-</section>
+        .listing-card {
+            background: white;
+            border-radius: 0; /* Boxy luxury look */
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border-bottom: 1px solid #f0f0f0;
+        }
 
-<!-- Luxury Search Bar -->
-<div class="booking-bar-wrapper" style="position: relative; margin: -3rem auto 3rem; max-width: 1000px; z-index: 10;">
-    <form class="booking-bar" action="/listings/search" method="GET" style="background: white; display: flex; align-items: stretch; justify-content: flex-start; padding: 0; position: relative; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);">
-        <!-- Destination Field -->
-        <div class="booking-bar__field location" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 200px; cursor: pointer; transition: background 0.3s ease; position: relative;">
-            <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Destination</label>
-            <input type="text" class="booking-bar__input" name="location" placeholder="Where would you like to stay?" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; width: 100%; cursor: text; position: relative; z-index: 5; padding: 0;">
-        </div>
+        .listing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .listing-card__image-wrapper {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+
+        .listing-card__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .listing-card:hover .listing-card__image { transform: scale(1.08); }
+
+        .listing-card__overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .listing-card:hover .listing-card__overlay { opacity: 1; }
+
+        .listing-card__wishlist {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .listing-card__wishlist:hover {
+            transform: scale(1.1);
+            background: white;
+        }
+
+        .listing-card__wishlist i { color: #666; font-size: 0.9rem; }
+        .listing-card__wishlist.active i { color: #FF385C; }
+
+        .listing-card__badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: white;
+            color: #222;
+            padding: 0.4rem 0.8rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            z-index: 5;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .listing-card__content { padding: 1.5rem; }
+
+        .listing-card__location {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #8B4513; /* Earthy accent */
+            margin-bottom: 0.5rem;
+        }
+
+        .listing-card__title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .listing-card__details {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .listing-card__footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .listing-card__price {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
         
-        <!-- Check In Field -->
-        <div class="booking-bar__field checkin" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 160px; cursor: pointer; transition: background 0.3s ease; position: relative;">
-            <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Check In</label>
-            <input type="date" class="booking-bar__input" name="checkIn" min="<%= new Date().toISOString().split('T')[0] %>" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; cursor: pointer; padding: 0; position: relative; z-index: 5;">
-        </div>
-        
-        <!-- Check Out Field -->
-        <div class="booking-bar__field checkout" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 160px; cursor: pointer; transition: background 0.3s ease; position: relative;">
-            <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Check Out</label>
-            <input type="date" class="booking-bar__input" name="checkOut" min="<%= new Date().toISOString().split('T')[0] %>" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; cursor: pointer; padding: 0; position: relative; z-index: 5;">
-        </div>
-        
-        <!-- Guests Field -->
-        <div class="booking-bar__field guests" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 220px; cursor: pointer; transition: background 0.3s ease; position: relative;">
-            <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Guests</label>
-            <input type="number" class="booking-bar__input" name="guests" min="1" max="20" value="2" placeholder="Number of guests" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; width: 100%; cursor: text; position: relative; z-index: 5; padding: 0; -moz-appearance: textfield; appearance: textfield;">
-        </div>
-        
-        <!-- Submit Button -->
-        <button type="submit" class="booking-bar__submit" style="background: #1a1a1a; color: white; border: none; padding: 1.25rem 2.5rem; font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: background 0.3s ease; white-space: nowrap;">
-            <i class="fas fa-search"></i> Search
-        </button>
-    </form>
-</div>
+        .listing-card__price span { font-weight: 400; font-size: 0.85rem; color: #666; }
 
-<!-- Section Divider -->
-<div class="section-divider">
-    <div class="section-divider__line"></div>
-    <i class="section-divider__icon fas fa-gem"></i>
-    <div class="section-divider__line"></div>
-</div>
+        .listing-card__rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .listing-card__rating i { color: #222; font-size: 0.75rem; }
 
-<!-- Listings Header -->
-<div class="listings-header">
-    <div>
-        <h2 class="listings-header__title">Our Properties</h2>
-        <p class="listings-header__count">
-            <span id="listingsCount"><%= allListings.length %></span> exceptional stays available
-        </p>
-    </div>
-    <div class="sort-options">
-        <label for="sortBy">Sort by:</label>
-        <select id="sortBy" class="form-select">
-            <option value="recommended">Recommended</option>
-            <option value="priceLow">Price: Low to High</option>
-            <option value="priceHigh">Price: High to Low</option>
-            <option value="rating">Highest Rated</option>
-        </select>
-    </div>
-</div>
+        /* Empty State */
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+            border-radius: 20px;
+        }
+        
+        .empty-state i { font-size: 4rem; color: #ccc; margin-bottom: 1.5rem; }
 
-<!-- Properties Grid -->
-<div class="properties-grid" id="listingsGrid">
-    <% for(let listing of allListings) { %>
-        <a href="/listings/<%= listing._id %>" class="property-card" 
-           data-category="<%= listing.category || 'Trending' %>">
-            <div class="property-card__image-wrapper">
-                <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600' %>" 
-                     class="property-card__image" alt="<%= listing.title %>">
-                <div class="property-card__overlay"></div>
-                
-                <!-- Wishlist Button -->
-                <button class="property-card__wishlist" 
-                        onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist('<%= listing._id %>', this)">
-                    <i class="far fa-heart"></i>
-                </button>
-                
-                <% if(listing.instantBook) { %>
-                    <span class="property-card__badge">Featured</span>
-                <% } %>
+        @media (max-width: 768px) {
+            .listings-hero h1 { font-size: 2rem; }
+            .listings-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <!-- Hero Section -->
+    <section class="listings-hero">
+        <video autoplay loop muted playsinline>
+            <source src="/videos/hotelBackground.webm" type="video/webm">
+        </video>
+        <div class="listings-hero-content">
+            <h1>Escape to Luxury</h1>
+            <p>Immerse yourself in curated stays, breathtaking views, and unforgettable comfort.</p>
+            <div class="hero-buttons">
+                <a href="/listings/new" class="hero-btn">
+                    <i class="fas fa-plus"></i> List Your Property
+                </a>
+                <a href="/map?type=listings" class="hero-btn">
+                    <i class="fas fa-map-marker-alt"></i> View on Map
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Luxury Search Bar for Stays -->
+    <div class="booking-bar-wrapper" style="position: relative; margin: -3rem auto 3rem; max-width: 1000px; z-index: 10;">
+        <form class="booking-bar" action="/listings/search" method="GET" style="background: white; display: flex; align-items: stretch; justify-content: flex-start; padding: 0; position: relative; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);">
+            <!-- Location Field -->
+            <div class="booking-bar__field location" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 200px; cursor: pointer; transition: background 0.3s ease; position: relative;">
+                <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Location</label>
+                <input type="text" class="booking-bar__input" name="location" placeholder="Where do you want to go?" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; width: 100%; cursor: text; position: relative; z-index: 5; padding: 0;">
             </div>
             
-            <div class="property-card__content">
-                <p class="property-card__location">
-                    <%= listing.location %>, <%= listing.country %>
-                </p>
-                <h3 class="property-card__title"><%= listing.title %></h3>
-                
-                <% if(listing.guests || listing.bedrooms || listing.beds) { %>
-                    <p class="property-card__details">
-                        <% if(listing.guests) { %><%= listing.guests %> guests<% } %>
-                        <% if(listing.bedrooms) { %> · <%= listing.bedrooms %> bedrooms<% } %>
-                        <% if(listing.beds) { %> · <%= listing.beds %> beds<% } %>
-                    </p>
-                <% } %>
-                
-                <div class="property-card__footer">
-                    <div>
-                        <span class="property-card__price">
-                            ₹<%= listing.price.toLocaleString("en-IN") %>
-                            <span>/ night</span>
-                        </span>
-                        <span class="property-card__tax tax-info"> + 18% GST</span>
-                    </div>
-                    
-                    <% if(listing.reviews && listing.reviews.length > 0) { %>
-                        <span class="property-card__rating">
-                            <i class="fas fa-star"></i> 4.8
-                        </span>
-                    <% } %>
-                </div>
+            <!-- Category Field (Mapped to match Vehicle Type slot) -->
+            <div class="booking-bar__field category" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 180px; cursor: pointer; transition: background 0.3s ease; position: relative;">
+                <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Category</label>
+                <select class="booking-bar__input" name="category" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; width: 100%; cursor: pointer; position: relative; z-index: 5; padding: 0;">
+                    <option value="all">All Stays</option>
+                    <option value="Trending">Trending</option>
+                    <option value="Rooms">Rooms</option>
+                    <option value="Iconic Cities">Iconic Cities</option>
+                    <option value="Mountains">Mountains</option>
+                    <option value="Castles">Castles</option>
+                    <option value="Amazing Pools">Amazing Pools</option>
+                </select>
             </div>
-        </a>
-    <% } %>
-</div>
+            
+            <!-- Start Date Field -->
+            <div class="booking-bar__field start-date" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 160px; cursor: pointer; transition: background 0.3s ease; position: relative;">
+                <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Check-In</label>
+                <input type="date" class="booking-bar__input" name="checkIn" min="<%= new Date().toISOString().split('T')[0] %>" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; cursor: pointer; padding: 0; position: relative; z-index: 5;">
+            </div>
+            
+            <!-- End Date Field -->
+            <div class="booking-bar__field end-date" style="display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 1.75rem; border-right: 1px solid #e5e5e5; min-width: 160px; cursor: pointer; transition: background 0.3s ease; position: relative;">
+                <label class="booking-bar__label" style="font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 0.5rem;">Check-Out</label>
+                <input type="date" class="booking-bar__input" name="checkOut" min="<%= new Date().toISOString().split('T')[0] %>" style="font-family: var(--font-sans); font-size: 0.9rem; color: #666; border: none; outline: none; background: transparent; cursor: pointer; padding: 0; position: relative; z-index: 5;">
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="booking-bar__submit" style="background: #1a1a1a; color: white; border: none; padding: 1.25rem 2.5rem; font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: background 0.3s ease; white-space: nowrap;">
+                <i class="fas fa-search"></i> Search Stays
+            </button>
+        </form>
+    </div>
 
-<script>
-    // Tax Toggle
-    const taxToggle = document.getElementById('switchCheckDefault');
-    if (taxToggle) {
-        taxToggle.addEventListener('click', function() {
-            const taxInfo = document.getElementsByClassName('tax-info');
-            for (let info of taxInfo) {
-                info.style.display = this.checked ? 'inline' : 'none';
+    <!-- Page Content -->
+    <div class="listings-page">
+        <div class="section-header">
+            <div>
+                <h2>Explore Stays</h2>
+                <p class="listings-count">
+                    <% if(allListings && allListings.length > 0) { %>
+                        <%= allListings.length %> properties available
+                    <% } else { %>
+                        No properties found
+                    <% } %>
+                </p>
+            </div>
+            <div class="filter-tabs">
+                <a href="/listings" class="filter-tab active"><i class="fas fa-th"></i> All</a>
+                <a href="/listings?category=Trending" class="filter-tab"><i class="fas fa-fire"></i> Trending</a>
+                <a href="/listings?category=Rooms" class="filter-tab"><i class="fas fa-door-open"></i> Rooms</a>
+                <a href="/listings?category=Mountains" class="filter-tab"><i class="fas fa-mountain"></i> Mountains</a>
+                <a href="/listings?category=Iconic Cities" class="filter-tab"><i class="fas fa-city"></i> Iconic Cities</a>
+            </div>
+        </div>
+
+        <div class="listings-grid">
+            <% if(allListings && allListings.length > 0) { %>
+                <% allListings.forEach(listing => { %>
+                    <a href="/listings/<%= listing._id %>" class="listing-card">
+                        <div class="listing-card__image-wrapper">
+                            <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=600' %>" 
+                                 class="listing-card__image" alt="<%= listing.title %>">
+                            <div class="listing-card__overlay"></div>
+                            
+                            <button class="listing-card__wishlist" onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist('<%= listing._id %>', this)">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            
+                            <% if(listing.category) { %>
+                                <span class="listing-card__badge"><%= listing.category %></span>
+                            <% } %>
+                        </div>
+                        
+                        <div class="listing-card__content">
+                            <p class="listing-card__location"><%= listing.location %></p>
+                            <h3 class="listing-card__title"><%= listing.title %></h3>
+                            <p class="listing-card__details">
+                                <%= listing.guests || 2 %> Guests · <%= listing.bedrooms || 1 %> Bedroom · <%= listing.propertyType || 'Entire place' %>
+                            </p>
+                            
+                            <div class="listing-card__footer">
+                                <span class="listing-card__price">
+                                    ₹<%= listing.price ? listing.price.toLocaleString('en-IN') : 'N/A' %> <span>/ night</span>
+                                </span>
+                                <span class="listing-card__rating">
+                                    <i class="fas fa-star"></i> <%= (Math.random() * (5.0 - 4.0) + 4.0).toFixed(1) %>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                <% }); %>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-home"></i>
+                    <h3>No stays found</h3>
+                    <p>Try adjusting your search filters or browse other categories.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        function toggleWishlist(id, btn) {
+            const icon = btn.querySelector('i');
+            const isActive = icon.classList.contains('fas');
+            
+            if (!isActive) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                btn.classList.add('active');
+                // Hardware/Localstorage logic here
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                btn.classList.remove('active');
             }
-        });
-    }
-
-    // Sort Functionality
-    const sortSelect = document.getElementById('sortBy');
-    const listingsGrid = document.getElementById('listingsGrid');
-    const propertyCards = document.querySelectorAll('.property-card');
-
-    if (sortSelect && listingsGrid) {
-        sortSelect.addEventListener('change', function() {
-            const sortBy = this.value;
-            const cards = Array.from(propertyCards);
-
-            cards.sort((a, b) => {
-                const priceA = parseInt(a.querySelector('.property-card__price').textContent.replace(/[₹,]/g, ''));
-                const priceB = parseInt(b.querySelector('.property-card__price').textContent.replace(/[₹,]/g, ''));
-
-                switch (sortBy) {
-                    case 'priceLow':
-                        return priceA - priceB;
-                    case 'priceHigh':
-                        return priceB - priceA;
-                    case 'rating':
-                        return Math.random() - 0.5;
-                    default:
-                        return 0;
-                }
-            });
-
-            cards.forEach(card => listingsGrid.appendChild(card));
-        });
-    }
-
-    // Wishlist Functionality
-    function toggleWishlist(listingId, btn) {
-        const icon = btn.querySelector('i');
-
-        if (icon.classList.contains('far')) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            btn.classList.add('active');
-
-            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-            if (!wishlist.includes(listingId)) {
-                wishlist.push(listingId);
-                localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            }
-        } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-            btn.classList.remove('active');
-
-            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-            wishlist = wishlist.filter(id => id !== listingId);
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
         }
-    }
-
-    // Load wishlist on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-
-        wishlist.forEach(listingId => {
-            const card = document.querySelector(`a[href="/listings/${listingId}"]`);
-            if (card) {
-                const btn = card.querySelector('.property-card__wishlist');
-                if (btn) {
-                    const icon = btn.querySelector('i');
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                    btn.classList.add('active');
-                }
-            }
-        });
-    });
-
-    // Fade-in animation for cards
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, { threshold: 0.1 });
-
-    propertyCards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = `all 0.5s ease ${index * 0.1}s`;
-        observer.observe(card);
-    });
-</script>
+    </script>

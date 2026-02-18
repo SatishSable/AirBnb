@@ -4,7 +4,7 @@ module.exports.rendersignup = (req, res) => {
   res.render("user/signup.ejs");
 }
 
-module.exports.singup = async (req, res) => {
+module.exports.singup = async (req, res, next) => {
   try {
     let { username, email, password } = req.body;
     const newUser = new User({ username, email });

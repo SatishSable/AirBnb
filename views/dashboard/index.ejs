@@ -1,398 +1,618 @@
 <% layout("layouts/boilerplate") %>
 
     <style>
-        .dashboard-container {
-            max-width: 1200px;
+        body {
+            background-color: #F8F9FA;
+            color: #333;
+        }
+
+        /* Full Width Layout Wrapper */
+        .dashboard-wrapper {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            max-width: 98%;
             margin: 2rem auto;
-            padding: 0 1rem;
+            min-height: 85vh;
         }
 
-        .dashboard-header {
+        /* ========================
+           SIDEBAR STYLES
+           ======================== */
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px; /* Below navbar */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #FF385C;
+            flex-direction: column;
+            gap: 2rem;
         }
 
-        .dashboard-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
+        .user-mini-profile {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
+        .sidebar-avatar {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--luxury-gold), #E8D5A3);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            font-family: var(--font-serif);
             font-weight: 600;
+            font-size: 2rem;
+            box-shadow: 0 10px 20px rgba(201, 162, 39, 0.2);
+        }
+
+        .sidebar-name {
+            font-family: var(--font-serif);
             font-size: 1.25rem;
-        }
-
-        .dashboard-nav {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .dashboard-nav a {
-            padding: 0.75rem 1.5rem;
-            background: #f7f7f7;
-            border-radius: 8px;
-            text-decoration: none;
+            font-weight: 600;
             color: #222;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-role {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--luxury-gold);
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: #666;
+            font-family: var(--font-sans);
             font-weight: 500;
+            border-radius: 12px;
             transition: all 0.3s ease;
         }
 
-        .dashboard-nav a:hover,
-        .dashboard-nav a.active {
-            background: linear-gradient(135deg, #FF385C, #E31C5F);
-            color: white;
+        .nav-item:hover {
+            background: rgba(201, 162, 39, 0.05);
+            color: var(--luxury-gold);
+            transform: translateX(5px);
         }
 
+        .nav-item.active {
+            background: var(--luxury-gold);
+            color: white;
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.2);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .admin-section {
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .nav-item.admin-link {
+            border: 1px dashed rgba(201, 162, 39, 0.3);
+            color: var(--luxury-gold);
+        }
+        
+        .nav-item.admin-link:hover {
+            background: var(--luxury-gold);
+            color: white;
+            border-style: solid;
+        }
+
+        /* ========================
+           MAIN CONTENT STYLES
+           ======================== */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Header Area */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .welcome-text h1 {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            margin: 0;
+            color: #222;
+        }
+
+        .welcome-text p {
+            color: #888;
+            margin: 0.5rem 0 0;
+            font-family: var(--font-sans);
+        }
+
+        .quick-actions-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-quick {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add {
+            background: #222;
+            color: white;
+        }
+        
+        .btn-add:hover {
+            background: var(--luxury-gold);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            border: 1px solid #e0e0e0;
+            color: #555;
+        }
+        
+        .btn-outline:hover {
+            border-color: #333;
+            color: #222;
+        }
+
+        /* Stats Grid - 4 Columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
-            margin-bottom: 3rem;
         }
 
         .stat-card {
             background: white;
-            padding: 1.5rem;
+            padding: 1.5rem 2rem;
             border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--luxury-gold);
+            opacity: 0.5;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
-        .stat-card .icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(201, 162, 39, 0.1);
+            color: var(--luxury-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
         }
 
-        .stat-card .number {
+        .stat-info .count {
+            font-family: var(--font-serif);
             font-size: 2rem;
-            font-weight: 700;
+            font-weight: 600;
+            line-height: 1;
             color: #222;
         }
 
-        .stat-card .label {
-            color: #717171;
+        .stat-info .label {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Dashboard Split Layout (2 Columns) */
+        .dashboard-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 50% 50% Split */
+            gap: 2rem;
+        }
+
+        .split-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            height: 100%;
+        }
+
+        .split-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 1rem;
+        }
+
+        .split-header h2 {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .split-header h2 i {
+            color: var(--luxury-gold);
+            font-size: 1.2rem;
+        }
+
+        .view-all {
+            color: var(--luxury-gold);
+            text-decoration: none;
+            font-weight: 600;
             font-size: 0.9rem;
         }
 
-        .stat-card.listings .icon {
-            color: #FF385C;
-        }
-
-        .stat-card.vehicles .icon {
-            color: #00A699;
-        }
-
-        .stat-card.dhabas .icon {
-            color: #FF9800;
-        }
-
-        .stat-card.bookings .icon {
-            color: #9C27B0;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 2rem 0 1rem;
+        /* List Items */
+        .list-items {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .items-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            flex-direction: column;
             gap: 1.5rem;
         }
 
-        .item-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        .list-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: #FAFAFA;
             transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
 
-        .item-card:hover {
-            transform: translateY(-5px);
+        .list-item:hover {
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-color: rgba(201, 162, 39, 0.2);
+            transform: scale(1.02);
         }
 
-        .item-card img {
-            width: 100%;
-            height: 150px;
+        .item-img {
+            width: 100px;
+            height: 70px;
+            border-radius: 8px;
             object-fit: cover;
         }
 
-        .item-card .content {
-            padding: 1rem;
+        .item-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .item-card h3 {
-            font-size: 1rem;
+        .item-title {
+            font-family: var(--font-serif);
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            margin: 0 0 0.25rem 0;
+            color: #222;
         }
 
-        .item-card p {
-            color: #717171;
+        .item-subtitle {
             font-size: 0.85rem;
-            margin: 0;
-        }
-
-        .item-card .actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .item-card .actions a {
-            flex: 1;
-            padding: 0.5rem;
-            text-align: center;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .actions .view {
-            background: #E8F5E9;
-            color: #2E7D32;
-        }
-
-        .actions .edit {
-            background: #E3F2FD;
-            color: #1976D2;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #717171;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .quick-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-
-        .quick-action-btn {
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #FF385C, #E31C5F);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
+            color: #777;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: all 0.3s ease;
         }
 
-        .quick-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 56, 92, 0.3);
-            color: white;
+        .item-pill {
+            margin-left: auto;
+            align-self: flex-start;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
         }
-
-        .status-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
+        
+        .pill-price {
+            background: #222;
+            color: var(--luxury-gold);
+        }
+        
+        .pill-status {
             text-transform: capitalize;
         }
+        
+        .status-confirmed, .status-active { background: #E8F5E9; color: #2E7D32; }
+        .status-pending { background: #FFF3E0; color: #E65100; }
+        .status-cancelled { background: #FFEBEE; color: #C62828; }
 
-        .status-confirmed {
-            background: #E8F5E9;
-            color: #2E7D32;
+        /* Empty State */
+        .empty-placeholder {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+        
+        .empty-placeholder i {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
         }
 
-        .status-cancelled {
-            background: #FFEBEE;
-            color: #C62828;
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .dashboard-wrapper {
+                grid-template-columns: 80px 1fr; /* Collapsed sidebar */
+            }
+            .sidebar {
+                padding: 1rem;
+                align-items: center;
+            }
+            .sidebar-name, .sidebar-role, .nav-text, .user-mini-profile {
+                display: none;
+            }
+            .nav-item {
+                justify-content: center;
+                padding: 1rem;
+            }
+            .sidebar-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                margin-bottom: 0;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        .status-pending {
-            background: #FFF3E0;
-            color: #E65100;
+        @media (max-width: 768px) {
+            .dashboard-wrapper {
+                grid-template-columns: 1fr;
+                margin: 1rem;
+            }
+            .sidebar {
+                display: none; /* Hide sidebar on mobile, maybe show hamburger */
+            }
+            .dashboard-split {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+            .quick-actions-row {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 
-    <div class="dashboard-container">
-        <div class="dashboard-header">
-            <h1>My Dashboard</h1>
-            <div class="user-info">
-                <div class="user-avatar">
-                    <%= currUser.username.charAt(0).toUpperCase() %>
+    <div class="dashboard-wrapper">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar">
+            <div class="user-mini-profile">
+                <div class="sidebar-avatar">
+                   <%= currUser.username.charAt(0).toUpperCase() %>
                 </div>
-                <div>
-                    <strong>
-                        <%= currUser.username %>
-                    </strong>
-                    <p style="margin: 0; font-size: 0.85rem; color: #717171;">
-                        <%= currUser.email %>
-                    </p>
-                </div>
+                <div class="sidebar-name"><%= currUser.username %></div>
+                <div class="sidebar-role"><%= currUser.role %> Account</div>
             </div>
-        </div>
 
-        <nav class="dashboard-nav">
-            <a href="/dashboard" class="active"><i class="fas fa-home"></i> Overview</a>
-            <a href="/dashboard/profile"><i class="fas fa-user"></i> Profile</a>
-            <a href="/dashboard/listings"><i class="fas fa-building"></i> My Listings</a>
-            <a href="/dashboard/vehicles"><i class="fas fa-car"></i> My Vehicles</a>
-            <a href="/dashboard/dhabas"><i class="fas fa-utensils"></i> My Dhabas</a>
-            <a href="/dashboard/bookings"><i class="fas fa-calendar-check"></i> My Bookings</a>
-            <% if (currUser.role==='admin' ) { %>
-                <a href="/admin" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                    <i class="fas fa-shield-alt"></i> Admin Panel
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item active">
+                    <i class="fas fa-th-large"></i> <span class="nav-text">Overview</span>
                 </a>
-                <% } %>
-        </nav>
+                <a href="/dashboard/profile" class="nav-item">
+                    <i class="fas fa-user-circle"></i> <span class="nav-text">My Profile</span>
+                </a>
+                <a href="/dashboard/listings" class="nav-item">
+                    <i class="fas fa-building"></i> <span class="nav-text">My Stays</span>
+                </a>
+                <a href="/dashboard/vehicles" class="nav-item">
+                    <i class="fas fa-car"></i> <span class="nav-text">My Vehicles</span>
+                </a>
+                <a href="/dashboard/dhabas" class="nav-item">
+                    <i class="fas fa-utensils"></i> <span class="nav-text">Dining</span>
+                </a>
+                <a href="/dashboard/bookings" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i> <span class="nav-text">Bookings</span>
+                </a>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <a href="/listings/new" class="quick-action-btn"><i class="fas fa-plus"></i> Add Listing</a>
-            <a href="/vehicles/new" class="quick-action-btn"><i class="fas fa-plus"></i> Add Vehicle</a>
-            <a href="/dhabas/new" class="quick-action-btn"><i class="fas fa-plus"></i> Add Dhaba</a>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card listings">
-                <div class="icon"><i class="fas fa-building"></i></div>
-                <div class="number">
-                    <%= myListings.length %>
-                </div>
-                <div class="label">My Listings</div>
-            </div>
-            <div class="stat-card vehicles">
-                <div class="icon"><i class="fas fa-car"></i></div>
-                <div class="number">
-                    <%= myVehicles.length %>
-                </div>
-                <div class="label">My Vehicles</div>
-            </div>
-            <div class="stat-card dhabas">
-                <div class="icon"><i class="fas fa-utensils"></i></div>
-                <div class="number">
-                    <%= myDhabas.length %>
-                </div>
-                <div class="label">My Dhabas</div>
-            </div>
-            <div class="stat-card bookings">
-                <div class="icon"><i class="fas fa-calendar-check"></i></div>
-                <div class="number">
-                    <%= myBookings.length %>
-                </div>
-                <div class="label">My Bookings</div>
-            </div>
-        </div>
-
-        <!-- Recent Listings -->
-        <h2 class="section-title"><i class="fas fa-building"></i> My Recent Listings</h2>
-        <% if (myListings.length> 0) { %>
-            <div class="items-grid">
-                <% myListings.slice(0, 4).forEach(listing=> { %>
-                    <div class="item-card">
-                        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' %>"
-                            alt="<%= listing.title %>">
-                        <div class="content">
-                            <h3>
-                                <%= listing.title %>
-                            </h3>
-                            <p>
-                                <%= listing.location %> • ₹<%= listing.price.toLocaleString('en-IN') %>/night
-                            </p>
-                            <div class="actions">
-                                <a href="/listings/<%= listing._id %>" class="view">View</a>
-                                <a href="/listings/<%= listing._id %>/edit" class="edit">Edit</a>
-                            </div>
-                        </div>
+                <% if (currUser.role === 'admin') { %>
+                    <div class="admin-section">
+                        <a href="/admin" class="nav-item admin-link">
+                            <i class="fas fa-shield-alt"></i> <span class="nav-text">Admin Panel</span>
+                        </a>
                     </div>
-                    <% }); %>
-            </div>
-            <% } else { %>
-                <div class="empty-state">
-                    <i class="fas fa-building"></i>
-                    <p>You haven't created any listings yet</p>
-                    <a href="/listings/new" class="quick-action-btn"
-                        style="display: inline-flex; margin-top: 1rem;">Create Your First Listing</a>
-                </div>
                 <% } %>
+            </nav>
+        </aside>
 
-                    <!-- Recent Bookings -->
-                    <h2 class="section-title"><i class="fas fa-calendar-check"></i> My Recent Bookings</h2>
-                    <% if (myBookings.length> 0) { %>
-                        <div class="items-grid">
-                            <% myBookings.slice(0, 4).forEach(booking=> { %>
-                                <div class="item-card">
-                                    <% let imgUrl='https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' ;
-                                        let title='Booking' ; let type='Listing' ; if (booking.listing) {
-                                        imgUrl=booking.listing.image && booking.listing.image.url ?
-                                        booking.listing.image.url : imgUrl; title=booking.listing.title; type='Listing'
-                                        ; } else if (booking.vehicle) { imgUrl=booking.vehicle.image &&
-                                        booking.vehicle.image.url ? booking.vehicle.image.url : imgUrl;
-                                        title=booking.vehicle.title; type='Vehicle' ; } else if (booking.dhaba) {
-                                        imgUrl=booking.dhaba.image && booking.dhaba.image.url ? booking.dhaba.image.url
-                                        : imgUrl; title=booking.dhaba.title; type='Dhaba' ; } %>
-                                        <img src="<%= imgUrl %>" alt="<%= title %>">
-                                        <div class="content">
-                                            <h3>
-                                                <%= title %>
-                                            </h3>
-                                            <p>
-                                                <%= type %> • <%= booking.checkIn ? new
-                                                        Date(booking.checkIn).toLocaleDateString() : 'N/A' %>
-                                            </p>
-                                            <p style="margin-top: 0.5rem;">
-                                                <span class="status-badge status-<%= booking.status || 'pending' %>">
-                                                    <%= booking.status || 'pending' %>
-                                                </span>
-                                            </p>
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            
+            <!-- 1. Header & Quick Actions -->
+            <div class="content-header">
+                <div class="welcome-text">
+                    <h1>Dashboard</h1>
+                    <p>Manage your properties and bookings from one place.</p>
+                </div>
+                <div class="quick-actions-row">
+                    <a href="/listings/new" class="btn-quick btn-add">
+                        <i class="fas fa-plus"></i> Add Listing
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Statistics Grid (Wide) -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-home"></i></div>
+                    <div class="stat-info">
+                        <div class="count"><%= myListings.length %></div>
+                        <div class="label">Total Stays</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-car-side"></i></div>
+                    <div class="stat-info">
+                        <div class="count"><%= myVehicles.length %></div>
+                        <div class="label">Vehicles</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-utensils"></i></div>
+                    <div class="stat-info">
+                        <div class="count"><%= myDhabas.length %></div>
+                        <div class="label">Dining Spots</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <div class="count"><%= myBookings.length %></div>
+                        <div class="label">Bookings</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Split View Content -->
+            <div class="dashboard-split">
+                
+                <!-- Recent Listings Column (Left) -->
+                <div class="split-card">
+                    <div class="split-header">
+                        <h2><i class="fas fa-building"></i> Recent Stays</h2>
+                        <a href="/dashboard/listings" class="view-all">View All</a>
+                    </div>
+                    
+                    <% if (myListings.length > 0) { %>
+                        <div class="list-items">
+                            <% myListings.slice(0, 4).forEach(listing => { %>
+                                <a href="/listings/<%= listing._id %>" class="list-item">
+                                    <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200' %>" 
+                                         alt="<%= listing.title %>" class="item-img">
+                                    <div class="item-content">
+                                        <h4 class="item-title"><%= listing.title %></h4>
+                                        <div class="item-subtitle">
+                                            <i class="fas fa-map-marker-alt"></i> <%= listing.location %>
                                         </div>
-                                </div>
-                                <% }); %>
+                                    </div>
+                                    <div class="item-pill pill-price">₹<%= listing.price.toLocaleString('en-IN') %></div>
+                                </a>
+                            <% }); %>
                         </div>
-                        <% } else { %>
-                            <div class="empty-state">
-                                <i class="fas fa-calendar-check"></i>
-                                <p>You haven't made any bookings yet</p>
-                                <a href="/listings" class="quick-action-btn"
-                                    style="display: inline-flex; margin-top: 1rem;">Browse Listings</a>
-                            </div>
-                            <% } %>
+                    <% } else { %>
+                        <div class="empty-placeholder">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No listings created yet</p>
+                            <a href="/listings/new" class="btn-quick btn-outline" style="display:inline-flex; border-radius:30px;">Create First</a>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Recent Bookings Column (Right) -->
+                <div class="split-card">
+                    <div class="split-header">
+                        <h2><i class="fas fa-calendar"></i> Recent Activity</h2>
+                        <a href="/dashboard/bookings" class="view-all">View All</a>
+                    </div>
+
+                    <% if (myBookings.length > 0) { %>
+                        <div class="list-items">
+                            <% myBookings.slice(0, 4).forEach(booking => { 
+                                let imgUrl = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200';
+                                let title = 'Booking';
+                                
+                                if (booking.listing) {
+                                    imgUrl = booking.listing.image && booking.listing.image.url ? booking.listing.image.url : imgUrl;
+                                    title = booking.listing.title;
+                                } else if (booking.vehicle) title = booking.vehicle.title;
+                                else if (booking.dhaba) title = booking.dhaba.title;
+                            %>
+                                <div class="list-item">
+                                    <img src="<%= imgUrl %>" alt="<%= title %>" class="item-img">
+                                    <div class="item-content">
+                                        <h4 class="item-title"><%= title %></h4>
+                                        <div class="item-subtitle">
+                                            <%= booking.checkIn ? new Date(booking.checkIn).toLocaleDateString() : 'N/A' %>
+                                        </div>
+                                    </div>
+                                    <div class="item-pill pill-status status-<%= booking.status || 'pending' %>">
+                                        <%= booking.status || 'pending' %>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-placeholder">
+                            <i class="fas fa-calendar-times"></i>
+                            <p>No bookings yet</p>
+                        </div>
+                    <% } %>
+                </div>
+
+            </div> <!-- End Split -->
+        </main>
     </div>

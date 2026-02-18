@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
-const { isLoggedIn, isDhabaOwner } = require("../middleware.js");
+const { isLoggedIn, isDhabaOwner, validateDhaba } = require("../middleware.js");
 const dhabaController = require("../controllers/dhaba.js");
 const multer = require("multer");
 const { storage } = require("../cloudConfig.js");
@@ -14,7 +14,7 @@ router.get("/", wrapAsync(dhabaController.index));
 router.get("/new", isLoggedIn, dhabaController.renderNewForm);
 
 // Create dhaba
-router.post("/", isLoggedIn, upload.single("dhaba[image]"), wrapAsync(dhabaController.createDhaba));
+router.post("/", isLoggedIn, upload.single("dhaba[image]"), validateDhaba, wrapAsync(dhabaController.createDhaba));
 
 // Show dhaba
 router.get("/:id", wrapAsync(dhabaController.showDhaba));
@@ -23,7 +23,7 @@ router.get("/:id", wrapAsync(dhabaController.showDhaba));
 router.get("/:id/edit", isLoggedIn, isDhabaOwner, wrapAsync(dhabaController.renderEditForm));
 
 // Update dhaba
-router.put("/:id", isLoggedIn, isDhabaOwner, upload.single("dhaba[image]"), wrapAsync(dhabaController.updateDhaba));
+router.put("/:id", isLoggedIn, isDhabaOwner, upload.single("dhaba[image]"), validateDhaba, wrapAsync(dhabaController.updateDhaba));
 
 // Delete dhaba
 router.delete("/:id", isLoggedIn, isDhabaOwner, wrapAsync(dhabaController.deleteDhaba));

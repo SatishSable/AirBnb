@@ -211,7 +211,7 @@
                                             <% } %>
                             </td>
                             <td>
-                                <%= booking.user ? booking.user.username : 'Unknown' %>
+                                <%= booking.guest ? booking.guest.username : 'Unknown' %>
                             </td>
                             <td>
                                 <% if (booking.checkIn) { %>
@@ -221,7 +221,7 @@
                                                 N/A
                                                 <% } %>
                             </td>
-                            <td>₹<%= booking.totalAmount ? booking.totalAmount.toLocaleString('en-IN') : '0' %>
+                            <td>₹<%= booking.totalPrice ? booking.totalPrice.toLocaleString('en-IN') : '0' %>
                             </td>
                             <td>
                                 <form action="/admin/bookings/<%= booking._id %>/status?_method=PUT" method="POST"

@@ -1,206 +1,365 @@
 <% layout("layouts/boilerplate") %>
 
     <style>
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        body {
+            background-color: #F8F9FA;
+            color: #333;
         }
 
-        .dashboard-header {
+        /* Layout Wrapper */
+        .dashboard-wrapper {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            max-width: 95%;
+            margin: 2rem auto;
+            min-height: 85vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .user-mini-profile {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .sidebar-avatar {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--luxury-gold), #E8D5A3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-serif);
+            font-weight: 600;
+            font-size: 2rem;
+            box-shadow: 0 10px 20px rgba(201, 162, 39, 0.2);
+        }
+
+        .sidebar-name {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .sidebar-role {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--luxury-gold);
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: #666;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(201, 162, 39, 0.05);
+            color: var(--luxury-gold);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--luxury-gold);
+            color: white;
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.2);
+        }
+
+        .nav-item i { width: 20px; text-align: center; }
+
+        /* Main Content */
+        .content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
         }
-
-        .dashboard-header h1 {
+        
+        .header-title h1 {
+            font-family: var(--font-serif);
             font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .dashboard-nav {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .dashboard-nav a {
-            padding: 0.75rem 1.5rem;
-            background: #f7f7f7;
-            border-radius: 8px;
-            text-decoration: none;
+            margin: 0;
             color: #222;
-            font-weight: 500;
-            transition: all 0.3s ease;
         }
-
-        .dashboard-nav a:hover,
-        .dashboard-nav a.active {
-            background: linear-gradient(135deg, #FF385C, #E31C5F);
+        
+        .header-title p {
+            color: #888;
+            font-family: var(--font-sans);
+            margin: 0.5rem 0 0;
+        }
+        
+        .btn-add {
+            background: #222;
             color: white;
-        }
-
-        .add-btn {
             padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #FF385C, #E31C5F);
-            color: white;
+            border-radius: 50px;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add:hover {
+            background: var(--luxury-gold);
+            transform: translateY(-2px);
         }
 
+        /* Grid */
         .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .item-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
         .item-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
         }
 
-        .item-card img {
+        .item-img-container {
+            position: relative;
+            height: 200px;
+        }
+
+        .item-img {
             width: 100%;
-            height: 180px;
+            height: 100%;
             object-fit: cover;
         }
-
-        .item-card .content {
-            padding: 1rem;
-        }
-
-        .item-card h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .item-card p {
-            color: #717171;
-            font-size: 0.85rem;
-            margin: 0;
-        }
-
-        .item-card .price {
-            font-size: 1.1rem;
-            font-weight: 600;
+        
+        .item-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.95);
+            padding: 0.35rem 0.85rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 700;
             color: #222;
-            margin-top: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .item-card .actions {
+        .item-content {
+            padding: 1.5rem;
+        }
+
+        .item-title {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            color: #222;
+        }
+
+        .item-location {
+            color: #777;
+            font-size: 0.9rem;
             display: flex;
+            align-items: center;
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .item-card .actions a,
-        .item-card .actions button {
-            flex: 1;
+        .item-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .action-btn {
             padding: 0.5rem;
             text-align: center;
-            border-radius: 6px;
+            border-radius: 8px;
             text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
             border: none;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
         }
 
-        .actions .view {
-            background: #E8F5E9;
-            color: #2E7D32;
-        }
+        .btn-view { background: #F5F5F5; color: #333; }
+        .btn-view:hover { background: #EEE; }
 
-        .actions .edit {
-            background: #E3F2FD;
-            color: #1976D2;
-        }
+        .btn-edit { background: rgba(201, 162, 39, 0.1); color: var(--luxury-gold); }
+        .btn-edit:hover { background: var(--luxury-gold); color: white; }
 
-        .actions .delete {
-            background: #FFEBEE;
-            color: #C62828;
-        }
+        .btn-delete { background: rgba(198, 40, 40, 0.05); color: #C62828; }
+        .btn-delete:hover { background: #C62828; color: white; }
 
         .empty-state {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 4rem;
-            color: #717171;
+            padding: 5rem 2rem;
+            background: white;
+            border-radius: 20px;
+            border: 1px dashed rgba(0,0,0,0.1);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #DDD;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-empty-text {
+            color: #777;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
         }
 
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
+        @media (max-width: 1100px) {
+            .dashboard-wrapper { grid-template-columns: 80px 1fr; }
+            .sidebar-name, .sidebar-role, .sidebar-nav span, .user-mini-profile { display: none; }
+            .sidebar { padding: 1rem; align-items: center; }
+            .sidebar-avatar { width: 50px; height: 50px; margin: 0; font-size: 1.5rem; }
+            .nav-item { justify-content: center; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .dashboard-wrapper { grid-template-columns: 1fr; margin: 1rem; }
         }
     </style>
 
-    <div class="dashboard-container">
-        <div class="dashboard-header">
-            <h1>My Listings (<%= listings.length %>)</h1>
-            <a href="/listings/new" class="add-btn"><i class="fas fa-plus"></i> Add New Listing</a>
-        </div>
+    <div class="dashboard-wrapper">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="user-mini-profile">
+                <div class="sidebar-avatar">
+                   <%= currUser.username.charAt(0).toUpperCase() %>
+                </div>
+                <div class="sidebar-name"><%= currUser.username %></div>
+                <div class="sidebar-role"><%= currUser.role %> Account</div>
+            </div>
 
-        <nav class="dashboard-nav">
-            <a href="/dashboard"><i class="fas fa-home"></i> Overview</a>
-            <a href="/dashboard/profile"><i class="fas fa-user"></i> Profile</a>
-            <a href="/dashboard/listings" class="active"><i class="fas fa-building"></i> My Listings</a>
-            <a href="/dashboard/vehicles"><i class="fas fa-car"></i> My Vehicles</a>
-            <a href="/dashboard/dhabas"><i class="fas fa-utensils"></i> My Dhabas</a>
-            <a href="/dashboard/bookings"><i class="fas fa-calendar-check"></i> My Bookings</a>
-        </nav>
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item">
+                    <i class="fas fa-th-large"></i> <span>Overview</span>
+                </a>
+                <a href="/dashboard/profile" class="nav-item">
+                    <i class="fas fa-user-circle"></i> <span>My Profile</span>
+                </a>
+                <a href="/dashboard/listings" class="nav-item active">
+                    <i class="fas fa-building"></i> <span>My Stays</span>
+                </a>
+                <a href="/dashboard/vehicles" class="nav-item">
+                    <i class="fas fa-car"></i> <span>My Vehicles</span>
+                </a>
+                <a href="/dashboard/dhabas" class="nav-item">
+                    <i class="fas fa-utensils"></i> <span>Dining</span>
+                </a>
+                <a href="/dashboard/bookings" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i> <span>Bookings</span>
+                </a>
+            </nav>
+        </aside>
 
-        <% if (listings.length> 0) { %>
-            <div class="items-grid">
-                <% listings.forEach(listing=> { %>
-                    <div class="item-card">
-                        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' %>"
-                            alt="<%= listing.title %>">
-                        <div class="content">
-                            <h3>
-                                <%= listing.title %>
-                            </h3>
-                            <p><i class="fas fa-map-marker-alt"></i>
-                                <%= listing.location %>, <%= listing.country %>
-                            </p>
-                            <p class="price">₹<%= listing.price.toLocaleString('en-IN') %> <small
-                                        style="font-weight: 400; color: #717171;">/ night</small></p>
-                            <div class="actions">
-                                <a href="/listings/<%= listing._id %>" class="view"><i class="fas fa-eye"></i> View</a>
-                                <a href="/listings/<%= listing._id %>/edit" class="edit"><i class="fas fa-edit"></i>
-                                    Edit</a>
-                                <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST"
-                                    style="flex: 1; margin: 0;">
-                                    <button type="submit" class="delete"
-                                        onclick="return confirm('Delete this listing?');" style="width: 100%;">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </form>
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <div class="content-header">
+                <div class="header-title">
+                    <h1>My Stays</h1>
+                    <p>Manage your <%= listings.length %> listed properties.</p>
+                </div>
+                <a href="/listings/new" class="btn-add">
+                    <i class="fas fa-plus"></i> Add Listing
+                </a>
+            </div>
+
+            <% if (listings.length > 0) { %>
+                <div class="items-grid">
+                    <% listings.forEach(listing => { %>
+                        <div class="item-card">
+                            <div class="item-img-container">
+                                <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' %>" class="item-img" alt="<%= listing.title %>">
+                                <span class="item-badge">₹<%= listing.price.toLocaleString('en-IN') %></span>
+                            </div>
+                            <div class="item-content">
+                                <h3 class="item-title"><%= listing.title %></h3>
+                                <div class="item-location">
+                                    <i class="fas fa-map-marker-alt"></i> <%= listing.location %>
+                                </div>
+                                <div class="item-actions">
+                                    <a href="/listings/<%= listing._id %>" class="action-btn btn-view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/listings/<%= listing._id %>/edit" class="action-btn btn-edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" style="margin:0;">
+                                        <button type="submit" class="action-btn btn-delete" style="width:100%; border-radius:8px;" onclick="return confirm('Delete this listing?');" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     <% }); %>
-            </div>
+                </div>
             <% } else { %>
                 <div class="empty-state">
-                    <i class="fas fa-building"></i>
-                    <h3>No Listings Yet</h3>
-                    <p>Start by creating your first listing</p>
-                    <a href="/listings/new" class="add-btn" style="display: inline-flex; margin-top: 1rem;">Create
-                        Listing</a>
+                    <i class="fas fa-home"></i>
+                    <p class="empty-empty-text">You haven't listed any properties yet.</p>
+                    <a href="/listings/new" class="btn-add" style="display: inline-flex;">Create First Listing</a>
                 </div>
-                <% } %>
+            <% } %>
+
+        </main>
     </div>

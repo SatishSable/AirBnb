@@ -4,7 +4,7 @@ const Vehicle = require("./models/vehicle");
 const Dhaba = require("./models/dhaba");
 const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressError.js");
-const { reviewSchema, listingSchema } = require("./schema.js");
+const { reviewSchema, listingSchema, vehicleSchema, dhabaSchema } = require("./schema.js");
 
 module.exports.isLoggedIn = (req, res, next) => {
 
@@ -87,6 +87,26 @@ module.exports.isDhabaOwner = async (req, res, next) => {
     return res.redirect(`/dhabas/${id}`);
   }
   next();
+}
+
+module.exports.validateVehicle = (req, res, next) => {
+  let { error } = vehicleSchema.validate(req.body);
+  if (error) {
+    let msg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, msg);
+  } else {
+    next();
+  }
+}
+
+module.exports.validateDhaba = (req, res, next) => {
+  let { error } = dhabaSchema.validate(req.body);
+  if (error) {
+    let msg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, msg);
+  } else {
+    next();
+  }
 }
 
 // Admin middleware - check if user is admin

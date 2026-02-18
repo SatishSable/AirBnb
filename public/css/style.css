@@ -43,6 +43,20 @@
   --transition-fast: 0.15s ease;
   --transition-base: 0.3s ease;
   --transition-slow: 0.5s ease;
+
+  /* Luxury Theme Variables */
+  --luxury-gold: #C9A227;
+  --luxury-gold-light: #E8D5A3;
+  --luxury-dark: #1A1A1A;
+  --luxury-charcoal: #2D2D2D;
+  --luxury-cream: #F8F6F0;
+  --luxury-ivory: #FFFEF9;
+  --luxury-text: #333333;
+  --luxury-text-light: #666666;
+  --luxury-accent: #8B7355;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-elegant: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* ===================================

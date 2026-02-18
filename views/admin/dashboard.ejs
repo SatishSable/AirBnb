@@ -303,7 +303,7 @@
                                                         <%= booking.dhaba.title %>
                                                             <% } %>
                                 </h4>
-                                <p>By <%= booking.user ? booking.user.username : 'Unknown' %>
+                                <p>By <%= booking.guest ? booking.guest.username : 'Unknown' %>
                                 </p>
                             </div>
                             <span class="badge badge-<%= booking.status || 'pending' %>">

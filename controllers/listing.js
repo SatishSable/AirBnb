@@ -33,7 +33,10 @@ module.exports.searchListings = async (req, res) => {
 
   // Filter by guest capacity
   if (guests) {
-    query.guests = { $gte: parseInt(guests) };
+    const guestCount = parseInt(guests);
+    if (!isNaN(guestCount)) {
+      query.guests = { $gte: guestCount };
+    }
   }
 
   const allListings = await Listing.find(query);
@@ -106,7 +109,8 @@ module.exports.createListing = async (req, res, next) => {
   console.log(" Saved Listing:", saved);
 
   req.flash("success", "New listing created successfully!");
-  res.redirect("/listings");
+  req.flash("success", "New listing created successfully!");
+  res.redirect(`/listings/${saved._id}`);
 };
 
 
@@ -117,7 +121,6 @@ module.exports.renderEditForm = async (req, res) => {
     req.flash("error", "Listing not found");
     return res.redirect("/listings");
   }
-  req.flash("success", "listing Edited successfully!");
 
   let original = listing.image && listing.image.url ? listing.image.url : '';
   if (original) {
@@ -128,37 +131,56 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateForm = async (req, res) => {
   const { id } = req.params;
+  
+  // Find the listing first
+  let listing = await Listing.findById(id);
+  if (!listing) {
+    req.flash("error", "Listing not found");
+    return res.redirect("/listings");
+  }
 
-  const existingListing = await Listing.findById(id);
-  const prevLocation = (existingListing?.location || "").trim();
+  // Update basic fields
+  if (req.body.listing) {
+    Object.assign(listing, req.body.listing);
+  }
 
-  // Update text fields (title, price, etc.)
-  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { new: true });
-
-  if (req.body.listing && typeof req.body.listing.location === "string") {
+  // Check if location changed to update geocoding
+  // We can check if the new location is different from the stored location
+  // Note: This relies on req.body.listing.location being present in the update
+  if (req.body.listing && req.body.listing.location) {
     const nextLocation = req.body.listing.location.trim();
+    // Assuming 'location' is stored as a string on the listing object
+    // If not, we might need a different comparison check
+    // However, since we just did Object.assign, listing.location is already updated to nextLocation
+    // So we need to geocode if the location field was part of the update.
+    
+    // A better approach is to simply geocode if location is provided, 
+    // or checks against a "previous" state if we had it. 
+    // But since we already updated 'listing' in memory with Object.assign, 
+    // we can just re-geocode the current listing.location.
+    // To avoid unnecessary API calls, we could check if it matches the *old* value, 
+    // but we didn't keep the old value easily without a second query or careful variable management.
+    // Let's just geocode if calling update on location.
+    
+    let response = await geocodingClient.forwardGeocode({
+      query: listing.location,
+      limit: 1,
+    }).send();
 
-    if (nextLocation && nextLocation !== prevLocation) {
-      let response = await geocodingClient.forwardGeocode({
-        query: nextLocation,
-        limit: 1,
-      }).send();
-
-      if (response.body.features.length > 0) {
-        listing.geometry = response.body.features[0].geometry;
-        listing.mapboxPlaceName = response.body.features[0].place_name;
-      }
-      await listing.save();
+    if (response.body.features.length > 0) {
+      listing.geometry = response.body.features[0].geometry;
+      listing.mapboxPlaceName = response.body.features[0].place_name;
     }
   }
 
   // Update images if new files are uploaded
   if (req.files && req.files.length > 0) {
     let uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    listing.images = uploadedImages;
+    listing.images = uploadedImages; // This replaces existing images. If you want to append, use concat.
     listing.image = uploadedImages[0]; // backward compat
-    await listing.save();
   }
+
+  await listing.save();
 
   req.flash("success", "Listing updated successfully!");
   res.redirect(`/listings/${id}`);

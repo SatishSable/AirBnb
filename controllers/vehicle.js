@@ -84,33 +84,35 @@ module.exports.updateVehicle = async (req, res) => {
     const { id } = req.params;
 
     const existingVehicle = await Vehicle.findById(id);
-    const prevLocation = (existingVehicle?.location || "").trim();
+    if (!existingVehicle) {
+        req.flash("error", "Vehicle not found");
+        return res.redirect("/vehicles");
+    }
 
-    const vehicle = await Vehicle.findByIdAndUpdate(id, { ...req.body.vehicle }, { new: true });
+    let vehicleUpdate = { ...req.body.vehicle };
+    const prevLocation = (existingVehicle.location || "").trim();
+    const nextLocation = (vehicleUpdate.location || "").trim();
 
-    if (req.body.vehicle && typeof req.body.vehicle.location === "string") {
-        const nextLocation = req.body.vehicle.location.trim();
-        if (nextLocation && nextLocation !== prevLocation) {
-            let response = await geocodingClient.forwardGeocode({
-                query: nextLocation,
-                limit: 1,
-            }).send();
+    if (nextLocation && nextLocation !== prevLocation) {
+        let response = await geocodingClient.forwardGeocode({
+            query: nextLocation,
+            limit: 1,
+        }).send();
 
-            if (response.body.features.length > 0) {
-                vehicle.geometry = response.body.features[0].geometry;
-                vehicle.mapboxPlaceName = response.body.features[0].place_name;
-                await vehicle.save();
-            }
+        if (response.body.features.length > 0) {
+            vehicleUpdate.geometry = response.body.features[0].geometry;
+            vehicleUpdate.mapboxPlaceName = response.body.features[0].place_name;
         }
     }
 
     if (req.file) {
-        vehicle.image = {
+        vehicleUpdate.image = {
             url: req.file.path,
             filename: req.file.filename
         };
-        await vehicle.save();
     }
+
+    await Vehicle.findByIdAndUpdate(id, vehicleUpdate);
 
     req.flash("success", "Vehicle updated successfully!");
     res.redirect(`/vehicles/${id}`);
