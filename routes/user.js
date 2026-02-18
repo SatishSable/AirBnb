@@ -13,6 +13,14 @@ router
    .get(userControllers.rendersignup)
    .post(wrapAsync(userControllers.singup));
 
+// OTP Verification routes
+router
+   .route("/verify-otp")
+   .get(userControllers.renderVerifyOTP)
+   .post(wrapAsync(userControllers.verifyAndCompleteSignup));
+
+// Resend OTP
+router.post("/resend-otp", wrapAsync(userControllers.resendOTP));
 
 router
    .route("/login")
