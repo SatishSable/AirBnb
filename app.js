@@ -27,6 +27,7 @@ const vehicleRouter = require("./routes/vehicle.js");
 const dhabaRouter = require("./routes/dhaba.js");
 const adminRouter = require("./routes/admin.js");
 const dashboardRouter = require("./routes/dashboard.js");
+const chatbotRouter = require("./routes/chatbot.js");
 
 // MongoDB connection
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/Wanderlust";
@@ -198,6 +199,7 @@ app.use("/vehicles", vehicleRouter);
 app.use("/dhabas", dhabaRouter);
 app.use("/admin", adminRouter);
 app.use("/dashboard", dashboardRouter);
+app.use("/api/chatbot", chatbotRouter);
 
 // Error handler
 app.use((err, req, res, next) => {
