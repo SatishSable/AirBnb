@@ -72,11 +72,30 @@ module.exports.showListing = async (req, res) => {
 
 
 module.exports.createListing = async (req, res, next) => {
-  // Geocode location with Mapbox
-  let response = await geocodingClient.forwardGeocode({
-    query: req.body.listing.location,
-    limit: 1,
-  }).send();
+  // Handle amenities - ensure it's always an array
+  if (req.body.listing && req.body.listing.amenities) {
+    if (!Array.isArray(req.body.listing.amenities)) {
+      req.body.listing.amenities = [req.body.listing.amenities];
+    }
+  }
+
+  // Geocode location with Mapbox (with error handling)
+  let geometry = { type: "Point", coordinates: [0, 0] };
+  let mapboxPlaceName;
+  try {
+    if (mapBoxToken) {
+      let response = await geocodingClient.forwardGeocode({
+        query: req.body.listing.location,
+        limit: 1,
+      }).send();
+      if (response.body.features.length > 0) {
+        geometry = response.body.features[0].geometry;
+        mapboxPlaceName = response.body.features[0].place_name;
+      }
+    }
+  } catch (err) {
+    console.log("⚠️ Geocoding failed (Map_Token may be missing):", err.message);
+  }
 
   // Handle multiple image uploads
   let uploadedImages = [];
@@ -88,27 +107,15 @@ module.exports.createListing = async (req, res, next) => {
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
   newListing.images = uploadedImages;
-  // Backward compatibility: set single image to first uploaded photo
   if (uploadedImages.length > 0) {
     newListing.image = uploadedImages[0];
   }
-
-  // Always set geometry (fallback if no result)
-  if (response.body.features.length > 0) {
-    newListing.geometry = response.body.features[0].geometry;
-    newListing.mapboxPlaceName = response.body.features[0].place_name;
-  } else {
-    newListing.geometry = {
-      type: "Point",
-      coordinates: [0, 0], // fallback default
-    };
-    newListing.mapboxPlaceName = undefined;
-  }
+  newListing.geometry = geometry;
+  newListing.mapboxPlaceName = mapboxPlaceName;
 
   let saved = await newListing.save();
   console.log(" Saved Listing:", saved);
 
-  req.flash("success", "New listing created successfully!");
   req.flash("success", "New listing created successfully!");
   res.redirect(`/listings/${saved._id}`);
 };
@@ -132,11 +139,19 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateForm = async (req, res) => {
   const { id } = req.params;
   
-  // Find the listing first
   let listing = await Listing.findById(id);
   if (!listing) {
     req.flash("error", "Listing not found");
     return res.redirect("/listings");
+  }
+
+  // Handle amenities - ensure it's always an array
+  if (req.body.listing && req.body.listing.amenities) {
+    if (!Array.isArray(req.body.listing.amenities)) {
+      req.body.listing.amenities = [req.body.listing.amenities];
+    }
+  } else if (req.body.listing) {
+    req.body.listing.amenities = [];
   }
 
   // Update basic fields
@@ -144,40 +159,29 @@ module.exports.updateForm = async (req, res) => {
     Object.assign(listing, req.body.listing);
   }
 
-  // Check if location changed to update geocoding
-  // We can check if the new location is different from the stored location
-  // Note: This relies on req.body.listing.location being present in the update
+  // Geocode if location changed (with error handling)
   if (req.body.listing && req.body.listing.location) {
-    const nextLocation = req.body.listing.location.trim();
-    // Assuming 'location' is stored as a string on the listing object
-    // If not, we might need a different comparison check
-    // However, since we just did Object.assign, listing.location is already updated to nextLocation
-    // So we need to geocode if the location field was part of the update.
-    
-    // A better approach is to simply geocode if location is provided, 
-    // or checks against a "previous" state if we had it. 
-    // But since we already updated 'listing' in memory with Object.assign, 
-    // we can just re-geocode the current listing.location.
-    // To avoid unnecessary API calls, we could check if it matches the *old* value, 
-    // but we didn't keep the old value easily without a second query or careful variable management.
-    // Let's just geocode if calling update on location.
-    
-    let response = await geocodingClient.forwardGeocode({
-      query: listing.location,
-      limit: 1,
-    }).send();
-
-    if (response.body.features.length > 0) {
-      listing.geometry = response.body.features[0].geometry;
-      listing.mapboxPlaceName = response.body.features[0].place_name;
+    try {
+      if (mapBoxToken) {
+        let response = await geocodingClient.forwardGeocode({
+          query: listing.location,
+          limit: 1,
+        }).send();
+        if (response.body.features.length > 0) {
+          listing.geometry = response.body.features[0].geometry;
+          listing.mapboxPlaceName = response.body.features[0].place_name;
+        }
+      }
+    } catch (err) {
+      console.log("⚠️ Geocoding failed on update:", err.message);
     }
   }
 
   // Update images if new files are uploaded
   if (req.files && req.files.length > 0) {
     let uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    listing.images = uploadedImages; // This replaces existing images. If you want to append, use concat.
-    listing.image = uploadedImages[0]; // backward compat
+    listing.images = uploadedImages;
+    listing.image = uploadedImages[0];
   }
 
   await listing.save();
