@@ -11,7 +11,7 @@ async function getGeminiResponse(userMessage, conversationHistory) {
   if (!apiKey) return null;
 
   try {
-    const systemPrompt = `You are EliteBot, the friendly and helpful AI assistant for Elite Passage — a premium travel platform similar to Airbnb. You help users with:
+    const systemPrompt = `You are ElitePassageBot, the friendly and helpful AI assistant for Elite Passage — a premium travel platform similar to Airbnb. You help users with:
 
 1. **Stays/Listings**: Finding accommodations, understanding property details, pricing, amenities, BHK types, and booking stays.
 2. **Vehicles**: Renting vehicles for travel, understanding vehicle types, pricing, availability, and booking.
@@ -98,8 +98,8 @@ const knowledgeBase = {
   greetings: {
     patterns: [/^(hi|hello|hey|howdy|hola|greetings|yo|sup|good\s*(morning|afternoon|evening|night))/i],
     responses: [
-      "Hello! 👋 Welcome to Elite Passage! I'm EliteBot, your personal travel assistant. How can I help you today? Whether you're looking for stays, vehicles, or dining — I've got you covered! ✨",
-      "Hey there! 🌟 I'm EliteBot, here to make your travel planning seamless. Need help finding the perfect stay, renting a vehicle, or discovering local dining? Just ask!",
+      "Hello! 👋 Welcome to Elite Passage! I'm ElitePassageBot, your personal travel assistant. How can I help you today? Whether you're looking for stays, vehicles, or dining — I've got you covered! ✨",
+      "Hey there! 🌟 I'm ElitePassageBot, here to make your travel planning seamless. Need help finding the perfect stay, renting a vehicle, or discovering local dining? Just ask!",
       "Hi! Welcome aboard! 🏠 I'm your Elite Passage assistant. I can help you explore stays, vehicles, and dining options. What are you looking for today?"
     ]
   },
@@ -169,8 +169,8 @@ const knowledgeBase = {
   about: {
     patterns: [/\b(what\s*is|about|wanderlust|tell\s*me\s*about|who\s*are\s*you|what\s*do\s*you|your\s*name|what\s*can)\b/i],
     responses: [
-      "✨ **I'm EliteBot**, your AI assistant for **Elite Passage** — a premium travel platform!\n\n**Elite Passage** offers:\n• 🏠 **Stays** — Find and book unique accommodations\n• 🚗 **Vehicles** — Rent vehicles for your journey\n• 🍽️ **Dining** — Discover local restaurants and dhabas\n\nI can help you with browsing, booking, account management, and travel tips. What would you like to explore?",
-      "🌟 Hi! I'm **EliteBot**, the AI concierge for Elite Passage!\n\nElite Passage is your all-in-one travel companion for:\n• Finding perfect stays anywhere\n• Renting vehicles for smooth travel\n• Discovering amazing dining experiences\n\nI'm here 24/7 to help you navigate, book, and plan. How can I assist you today?",
+      "✨ **I'm ElitePassageBot**, your AI assistant for **Elite Passage** — a premium travel platform!\n\n**Elite Passage** offers:\n• 🏠 **Stays** — Find and book unique accommodations\n• 🚗 **Vehicles** — Rent vehicles for your journey\n• 🍽️ **Dining** — Discover local restaurants and dhabas\n\nI can help you with browsing, booking, account management, and travel tips. What would you like to explore?",
+      "🌟 Hi! I'm **ElitePassageBot**, the AI concierge for Elite Passage!\n\nElite Passage is your all-in-one travel companion for:\n• Finding perfect stays anywhere\n• Renting vehicles for smooth travel\n• Discovering amazing dining experiences\n\nI'm here 24/7 to help you navigate, book, and plan. How can I assist you today?",
     ]
   },
   help: {
@@ -255,6 +255,6 @@ module.exports.getStatus = (req, res) => {
   res.json({
     active: true,
     ai: !!process.env.GEMINI_API_KEY,
-    name: "EliteBot"
+    name: "ElitePassageBot"
   });
 };

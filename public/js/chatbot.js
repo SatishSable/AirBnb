@@ -1,5 +1,5 @@
 /**
- * WanderBot — Frontend Chat Engine
+ * ElitePassageBot — Frontend Chat Engine
  * Handles UI interactions, message rendering, and API communication
  */
 
@@ -55,7 +55,7 @@
           <div class="status-dot"></div>
         </div>
         <div class="chatbot-header-info">
-          <h4>WanderBot</h4>
+          <h4>ElitePassageBot</h4>
           <span>● Online — AI Assistant</span>
         </div>
         <div class="chatbot-header-actions">
@@ -71,7 +71,7 @@
           <div class="chatbot-welcome-icon">
             <i class="fas fa-sparkles"></i>
           </div>
-          <h3>Welcome to WanderBot</h3>
+          <h3>Welcome to ElitePassageBot</h3>
           <p>Your personal AI concierge for stays, vehicles,<br>dining, and everything travel.</p>
           <div class="chatbot-welcome-actions">
             <div class="chatbot-welcome-btn" data-msg="I'm looking for a place to stay">
@@ -233,7 +233,7 @@
         <div class="chatbot-welcome-icon">
           <i class="fas fa-sparkles"></i>
         </div>
-        <h3>Welcome to WanderBot</h3>
+        <h3>Welcome to ElitePassageBot</h3>
         <p>Your personal AI concierge for stays, vehicles,<br>dining, and everything travel.</p>
         <div class="chatbot-welcome-actions">
           <div class="chatbot-welcome-btn" data-msg="I'm looking for a place to stay">
