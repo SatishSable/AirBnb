@@ -7,6 +7,10 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  phone: {
+    type: String,
+    sparse: true
+  },
   googleId: {
     type: String,
     unique: true,

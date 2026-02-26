@@ -2,8 +2,10 @@ const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
 const Vehicle = require("../models/vehicle.js");
 const Dhaba = require("../models/dhaba.js");
+const User = require("../models/user.js");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const { sendPaymentOTP, verifyPaymentOTP } = require("../utils/smsOtpService.js");
 
 const razorpay = process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET
     ? new Razorpay({
@@ -457,5 +459,112 @@ module.exports.cancelBooking = async (req, res) => {
         console.error("Cancel booking error:", error);
         req.flash("error", "Failed to cancel booking");
         res.redirect("/bookings");
+    }
+};
+
+// ================================
+// PAYMENT OTP (SMS)
+// ================================
+
+// Send OTP to user's phone
+module.exports.sendPaymentOtp = async (req, res) => {
+    try {
+        const { phone } = req.body;
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Use provided phone or user's saved phone
+        const phoneNumber = phone || user.phone;
+
+        if (!phoneNumber) {
+            return res.status(400).json({ success: false, message: "Phone number is required", needPhone: true });
+        }
+
+        // Save phone to user profile if not saved
+        if (!user.phone && phone) {
+            user.phone = phone;
+            await user.save();
+        }
+
+        // Send OTP
+        const result = await sendPaymentOTP(phoneNumber, user._id);
+
+        // Mask phone number for response
+        const maskedPhone = phoneNumber.replace(/^(\+?\d{2})(\d+)(\d{4})$/, '$1••••••$3');
+
+        return res.json({
+            success: result.success,
+            message: result.message,
+            maskedPhone,
+            demo: result.demo || false
+        });
+
+    } catch (error) {
+        console.error("Send payment OTP error:", error);
+        return res.status(500).json({ success: false, message: "Failed to send OTP" });
+    }
+};
+
+// Verify OTP and process payment
+module.exports.verifyPaymentOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+
+        if (!otp || otp.length !== 6) {
+            return res.status(400).json({ success: false, message: "Please enter a valid 6-digit OTP" });
+        }
+
+        const result = verifyPaymentOTP(req.user._id, otp);
+
+        if (!result.valid) {
+            return res.status(400).json({ success: false, message: result.message });
+        }
+
+        // OTP is valid — now process the payment
+        const pendingBooking = req.session.pendingBooking;
+
+        if (!pendingBooking) {
+            return res.status(400).json({ success: false, message: "No pending booking found" });
+        }
+
+        const newBooking = new Booking({
+            bookingType: pendingBooking.type,
+            guest: req.user._id,
+            checkIn: new Date(pendingBooking.checkIn),
+            checkOut: new Date(pendingBooking.checkOut),
+            guests: pendingBooking.guests,
+            basePrice: pendingBooking.basePrice,
+            serviceFee: pendingBooking.serviceFee,
+            taxes: pendingBooking.taxes,
+            totalPrice: pendingBooking.totalPrice,
+            paymentStatus: 'completed',
+            paymentId: 'PAY_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+            status: 'confirmed',
+            reservationTime: pendingBooking.reservationTime
+        });
+
+        if (pendingBooking.type === 'listing') {
+            newBooking.listing = pendingBooking.itemId;
+        } else if (pendingBooking.type === 'vehicle') {
+            newBooking.vehicle = pendingBooking.itemId;
+        } else if (pendingBooking.type === 'dhaba') {
+            newBooking.dhaba = pendingBooking.itemId;
+        }
+
+        await newBooking.save();
+        delete req.session.pendingBooking;
+
+        return res.json({
+            success: true,
+            bookingId: newBooking._id,
+            message: "Payment successful!"
+        });
+
+    } catch (error) {
+        console.error("Verify payment OTP error:", error);
+        return res.status(500).json({ success: false, message: "Payment verification failed" });
     }
 };

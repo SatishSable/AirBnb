@@ -28,6 +28,10 @@ const dhabaRouter = require("./routes/dhaba.js");
 const adminRouter = require("./routes/admin.js");
 const dashboardRouter = require("./routes/dashboard.js");
 const chatbotRouter = require("./routes/chatbot.js");
+const { initTwilio } = require("./utils/smsOtpService.js");
+
+// Initialize Twilio SMS service
+initTwilio();
 
 // MongoDB connection
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/Wanderlust";

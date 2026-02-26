@@ -9,8 +9,13 @@
     --nav-dark: #1A1A1A;
   }
 
+  /* Push body content below the fixed navbar */
+  body {
+    padding-top: 70px;
+  }
+
   .navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -230,7 +235,8 @@
     padding: 0.75rem 0;
     margin-top: 0.75rem;
     background: #FFFFFF;
-    overflow: hidden;
+    max-height: 70vh;
+    overflow-y: auto;
     animation: dropdownFadeIn 0.25s ease;
     min-width: 220px;
   }
@@ -384,6 +390,8 @@
         const heroSection = document.querySelector('.hero, .stays-hero, .vehicles-hero, .dhabas-hero, .homepage-hero, [class*="-hero"]');
 
         if (heroSection && navbar) {
+          // Hero page: remove body padding so hero extends behind navbar
+          document.body.style.paddingTop = '0';
           // Hero page: make navbar transparent and absolute
           navbar.classList.add('navbar-hero');
 
