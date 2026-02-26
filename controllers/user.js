@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const { sendOTP, verifyOTP } = require("../utils/otpService");
+const { sendOTP, verifyOTP, isEmailConfigured } = require("../utils/otpService");
 
 module.exports.rendersignup = (req, res) => {
   res.render("user/signup.ejs");
@@ -23,10 +23,22 @@ module.exports.singup = async (req, res, next) => {
       return res.redirect("/signup");
     }
 
-    // Store signup data in session for after OTP verification
-    req.session.pendingSignup = { username, email, password };
+    // If email service is NOT configured, skip OTP and register directly
+    if (!isEmailConfigured()) {
+      const newUser = new User({ username, email });
+      const registerUser = await User.register(newUser, password);
+      console.log(`✅ User registered (no OTP — email not configured): ${registerUser.username}`);
 
-    // Send OTP to email
+      req.login(registerUser, (err) => {
+        if (err) return next(err);
+        req.flash("success", "Welcome to Elite Passage! 🎉");
+        res.redirect("/listings");
+      });
+      return;
+    }
+
+    // Email IS configured — proceed with OTP verification
+    req.session.pendingSignup = { username, email, password };
     await sendOTP(email, username);
     req.flash("success", "A verification code has been sent to your email!");
     res.redirect("/verify-otp");

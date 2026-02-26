@@ -3,6 +3,11 @@ const nodemailer = require("nodemailer");
 // In-memory OTP storage (in production, use Redis or DB)
 const otpStore = new Map();
 
+// Check if email service is configured
+function isEmailConfigured() {
+    return !!(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+}
+
 // Generate a 6-digit OTP
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -19,8 +24,13 @@ function createTransporter() {
     });
 }
 
-// Send OTP email
+// Send OTP email (returns null if email is not configured)
 async function sendOTP(email, username) {
+    if (!isEmailConfigured()) {
+        console.log("⚠️ EMAIL_USER/EMAIL_PASS not set — skipping OTP verification");
+        return null;
+    }
+
     const otp = generateOTP();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
@@ -112,4 +122,4 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000);
 
-module.exports = { sendOTP, verifyOTP, getPendingData };
+module.exports = { sendOTP, verifyOTP, getPendingData, isEmailConfigured };
