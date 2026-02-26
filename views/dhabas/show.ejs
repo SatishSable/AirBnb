@@ -14,17 +14,105 @@
             margin-bottom: 2rem;
         }
 
-        .dhaba-image {
+        /* Image Gallery */
+        .img-gallery {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 0.5rem;
             border-radius: 16px;
             overflow: hidden;
-            height: 400px;
+            height: 420px;
         }
-
-        .dhaba-image img {
+        .img-gallery .img-main {
+            height: 420px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .img-gallery .img-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .img-gallery .img-main img:hover { transform: scale(1.03); }
+        .img-gallery .img-thumbs {
+            display: grid;
+            grid-template-rows: repeat(2, 1fr);
+            gap: 0.5rem;
+            height: 420px;
+        }
+        .img-gallery .img-thumb {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .img-gallery .img-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .img-gallery .img-thumb img:hover { transform: scale(1.05); }
+        .img-gallery .view-gallery-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(8px);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        .img-gallery .view-gallery-btn:hover { background: rgba(0,0,0,0.85); }
+        .img-gallery-single {
+            border-radius: 16px;
+            overflow: hidden;
+            height: 420px;
+        }
+        .img-gallery-single img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
+        /* Lightbox */
+        .lb-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .lb-overlay.active { display: flex; }
+        .lb-close {
+            position: absolute; top: 1.5rem; right: 2rem;
+            background: none; border: none; color: white; font-size: 2rem; cursor: pointer; z-index: 10001;
+        }
+        .lb-counter {
+            position: absolute; top: 1.5rem; left: 2rem;
+            color: rgba(255,255,255,0.7); font-size: 0.9rem; font-weight: 600; z-index: 10001;
+        }
+        .lb-img-wrap { max-width: 85vw; max-height: 85vh; }
+        .lb-img-wrap img { max-width: 85vw; max-height: 85vh; object-fit: contain; border-radius: 8px; }
+        .lb-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: white; font-size: 1rem;
+            transition: all 0.3s ease; z-index: 10001;
+        }
+        .lb-nav:hover { background: rgba(255,255,255,0.3); }
+        .lb-prev { left: 2rem; }
+        .lb-next { right: 2rem; }
 
         .dhaba-info h1 {
             font-size: 2rem;
@@ -159,12 +247,29 @@
             .dhaba-header {
                 grid-template-columns: 1fr;
             }
-
-            .dhaba-image {
-                height: 300px;
+            .img-gallery {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .img-gallery .img-main { height: 280px; }
+            .img-gallery .img-thumbs {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: 1fr;
+                height: 140px;
             }
         }
     </style>
+
+    <!-- Lightbox Modal -->
+    <div class="lb-overlay" id="dhabaLightbox">
+        <button class="lb-close" onclick="closeLightbox()">&times;</button>
+        <span class="lb-counter" id="lbCounter"></span>
+        <button class="lb-nav lb-prev" onclick="lbNav(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button class="lb-nav lb-next" onclick="lbNav(1)"><i class="fas fa-chevron-right"></i></button>
+        <div class="lb-img-wrap">
+            <img src="" alt="Gallery image" id="lbImage">
+        </div>
+    </div>
 
     <div class="dhaba-show">
         <a href="/dhabas"
@@ -173,10 +278,52 @@
         </a>
 
         <div class="dhaba-header">
-            <div class="dhaba-image">
-                <img src="<%= dhaba.image && dhaba.image.url ? dhaba.image.url : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800' %>"
-                    alt="<%= dhaba.title %>">
-            </div>
+            <%
+              let allDhabaImages = [];
+              if(dhaba.images && dhaba.images.length > 0) {
+                allDhabaImages = dhaba.images;
+              } else if(dhaba.image && dhaba.image.url) {
+                allDhabaImages = [dhaba.image];
+              } else {
+                allDhabaImages = [{ url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800' }];
+              }
+            %>
+
+            <% if(allDhabaImages.length >= 3) { %>
+              <div class="img-gallery">
+                <div class="img-main" onclick="openLightbox(0)">
+                  <img src="<%= allDhabaImages[0].url %>" alt="<%= dhaba.title %> - Main">
+                </div>
+                <div class="img-thumbs">
+                  <div class="img-thumb" onclick="openLightbox(1)">
+                    <img src="<%= allDhabaImages[1].url %>" alt="<%= dhaba.title %> - Photo 2">
+                  </div>
+                  <div class="img-thumb" onclick="openLightbox(2)">
+                    <img src="<%= allDhabaImages[2].url %>" alt="<%= dhaba.title %> - Photo 3">
+                    <% if(allDhabaImages.length > 3) { %>
+                      <button class="view-gallery-btn" onclick="event.stopPropagation(); openLightbox(0)">
+                        <i class="fas fa-images"></i> View Gallery (<%= allDhabaImages.length %>)
+                      </button>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% } else if(allDhabaImages.length === 2) { %>
+              <div class="img-gallery">
+                <div class="img-main" onclick="openLightbox(0)">
+                  <img src="<%= allDhabaImages[0].url %>" alt="<%= dhaba.title %> - Main">
+                </div>
+                <div class="img-thumbs" style="grid-template-rows: 1fr;">
+                  <div class="img-thumb" onclick="openLightbox(1)">
+                    <img src="<%= allDhabaImages[1].url %>" alt="<%= dhaba.title %> - Photo 2">
+                  </div>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="img-gallery-single" onclick="openLightbox(0)">
+                <img src="<%= allDhabaImages[0].url %>" alt="<%= dhaba.title %>">
+              </div>
+            <% } %>
 
             <div class="dhaba-info">
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -366,13 +513,13 @@
                                                 style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #ddd; display: flex; gap: 1rem;">
                                                 <a href="/dhabas/<%= dhaba._id %>/edit"
                                                     style="flex: 1; padding: 0.75rem 1.5rem; background: #222; color: white; text-align: center; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
-                                                    <i class="fas fa-edit"></i> Edit Dhaba
+                                                    <i class="fas fa-edit"></i> Edit Dining
                                                 </a>
                                                 <form method="POST" action="/dhabas/<%= dhaba._id %>?_method=DELETE"
                                                     style="flex: 1;">
                                                     <button type="submit"
                                                         style="width: 100%; padding: 0.75rem 1.5rem; background: #FF385C; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;"
-                                                        onclick="return confirm('Are you sure you want to delete this dhaba?');">
+                                                        onclick="return confirm('Are you sure you want to delete this dining spot?');">
                                                         <i class="fas fa-trash"></i> Delete
                                                     </button>
                                                 </form>
@@ -398,6 +545,34 @@
     <script>
         var maptoken = "<%- mapBoxToken || '' %>";
         var dhaba = <%- JSON.stringify(dhaba) %>;
+
+        // Lightbox Gallery
+        const galleryImages = <%- JSON.stringify(allDhabaImages.map(i => i.url)) %>;
+        let lbIndex = 0;
+        function openLightbox(idx) {
+            lbIndex = idx;
+            document.getElementById('lbImage').src = galleryImages[lbIndex];
+            document.getElementById('lbCounter').textContent = (lbIndex + 1) + ' / ' + galleryImages.length;
+            document.getElementById('dhabaLightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            document.getElementById('dhabaLightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        function lbNav(dir) {
+            lbIndex += dir;
+            if (lbIndex >= galleryImages.length) lbIndex = 0;
+            if (lbIndex < 0) lbIndex = galleryImages.length - 1;
+            document.getElementById('lbImage').src = galleryImages[lbIndex];
+            document.getElementById('lbCounter').textContent = (lbIndex + 1) + ' / ' + galleryImages.length;
+        }
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('dhabaLightbox').classList.contains('active')) return;
+            if (e.key === 'ArrowLeft') lbNav(-1);
+            if (e.key === 'ArrowRight') lbNav(1);
+            if (e.key === 'Escape') closeLightbox();
+        });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
