@@ -359,6 +359,68 @@
           <div class="invalid-feedback">Please enter a location</div>
         </div>
 
+        <!-- Property Type & Category -->
+        <div class="form-field row">
+          <div class="mb-3 col-md-6">
+            <label class="form-label">🏠 Property Type</label>
+            <select name="listing[propertyType]" class="form-control">
+              <% ['Entire place','Private room','Shared room','Hotel room'].forEach(t => { %>
+                <option value="<%= t %>" <%= listing.propertyType === t ? 'selected' : '' %>><%= t %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="mb-3 col-md-6">
+            <label class="form-label">🏷️ Category</label>
+            <select name="listing[category]" class="form-control">
+              <% ['Trending','Rooms','Iconic Cities','Mountains','Castles','Amazing Pools','Camping','Farms','Beach','Arctic','Caves','Luxe','Countryside','Lakefront','Treehouses','Tiny homes'].forEach(c => { %>
+                <option value="<%= c %>" <%= listing.category === c ? 'selected' : '' %>><%= c %></option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+
+        <!-- Capacity -->
+        <div class="form-field row">
+          <div class="mb-3 col-md-3 col-6">
+            <label class="form-label">👥 Guests</label>
+            <input type="number" name="listing[guests]" class="form-control" value="<%= listing.guests || 1 %>" min="1">
+          </div>
+          <div class="mb-3 col-md-3 col-6">
+            <label class="form-label">🛏️ Bedrooms</label>
+            <input type="number" name="listing[bedrooms]" class="form-control" value="<%= listing.bedrooms || 1 %>" min="0">
+          </div>
+          <div class="mb-3 col-md-3 col-6">
+            <label class="form-label">🛌 Beds</label>
+            <input type="number" name="listing[beds]" class="form-control" value="<%= listing.beds || 1 %>" min="1">
+          </div>
+          <div class="mb-3 col-md-3 col-6">
+            <label class="form-label">🚿 Bathrooms</label>
+            <input type="number" name="listing[bathrooms]" class="form-control" value="<%= listing.bathrooms || 1 %>" min="0" step="0.5">
+          </div>
+        </div>
+
+        <!-- Amenities -->
+        <div class="form-field mb-4">
+          <label class="form-label">✨ Amenities</label>
+          <p style="color: #999; font-size: 0.82rem; margin-bottom: 0.75rem;">Select all that apply</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem;">
+            <% const amenitiesList = ['WiFi','Kitchen','Washer','Dryer','Air conditioning','Heating','TV','Pool','Hot tub','Free parking','EV charger','Gym','Breakfast','Workspace','Fireplace','Piano','BBQ grill','Beach access','Smoke alarm','Carbon monoxide alarm']; %>
+            <% const amenityIcons = {'WiFi':'fa-wifi','Kitchen':'fa-utensils','Washer':'fa-tshirt','Dryer':'fa-wind','Air conditioning':'fa-snowflake','Heating':'fa-fire','TV':'fa-tv','Pool':'fa-swimming-pool','Hot tub':'fa-hot-tub','Free parking':'fa-parking','EV charger':'fa-charging-station','Gym':'fa-dumbbell','Breakfast':'fa-coffee','Workspace':'fa-laptop','Fireplace':'fa-fire-alt','Piano':'fa-music','BBQ grill':'fa-drumstick-bite','Beach access':'fa-umbrella-beach','Smoke alarm':'fa-bell','Carbon monoxide alarm':'fa-shield-alt'}; %>
+            <% const currentAmenities = listing.amenities || []; %>
+            <% amenitiesList.forEach(a => { %>
+              <% const isChecked = currentAmenities.includes(a); %>
+              <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; background: <%= isChecked ? '#fdf8e8' : '#fafafa' %>; border: 2px solid <%= isChecked ? '#C9A227' : '#e8e8e8' %>; border-radius: 10px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s ease;"
+                     onmouseover="this.style.borderColor='#C9A227'; this.style.background='#fff'"
+                     onmouseout="if(!this.querySelector('input').checked){this.style.borderColor='#e8e8e8'; this.style.background='#fafafa'}">
+                <input type="checkbox" name="listing[amenities]" value="<%= a %>" <%= isChecked ? 'checked' : '' %> style="accent-color: #C9A227;"
+                       onchange="let l=this.parentElement; if(this.checked){l.style.borderColor='#C9A227';l.style.background='#fdf8e8'}else{l.style.borderColor='#e8e8e8';l.style.background='#fafafa'}">
+                <i class="fas <%= amenityIcons[a] || 'fa-check' %>" style="color: #C9A227; width: 16px; font-size: 0.8rem;"></i>
+                <%= a %>
+              </label>
+            <% }); %>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-submit">Update Listing →</button>
       </form>
     </div>

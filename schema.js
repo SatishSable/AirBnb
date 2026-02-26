@@ -12,7 +12,13 @@ module.exports.listingSchema = Joi.object({
             url: Joi.string().allow("", null),
             filename: Joi.string().allow("", null)
         }).optional(),
-        category: Joi.string()
+        category: Joi.string(),
+        propertyType: Joi.string().valid('Entire place', 'Private room', 'Shared room', 'Hotel room'),
+        guests: Joi.number().min(1),
+        bedrooms: Joi.number().min(0),
+        beds: Joi.number().min(1),
+        bathrooms: Joi.number().min(0),
+        amenities: Joi.alternatives().try(Joi.array().items(Joi.string()), Joi.string())
     }).required(),
 });
 
