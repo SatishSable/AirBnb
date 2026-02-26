@@ -14,7 +14,7 @@ router.get("/", wrapAsync(vehicleController.index));
 router.get("/new", isLoggedIn, vehicleController.renderNewForm);
 
 // Create vehicle
-router.post("/", isLoggedIn, upload.single("vehicle[image]"), validateVehicle, wrapAsync(vehicleController.createVehicle));
+router.post("/", isLoggedIn, upload.array('vehicle[image]', 5), validateVehicle, wrapAsync(vehicleController.createVehicle));
 
 // Show vehicle
 router.get("/:id", wrapAsync(vehicleController.showVehicle));
@@ -23,7 +23,7 @@ router.get("/:id", wrapAsync(vehicleController.showVehicle));
 router.get("/:id/edit", isLoggedIn, isVehicleOwner, wrapAsync(vehicleController.renderEditForm));
 
 // Update vehicle
-router.put("/:id", isLoggedIn, isVehicleOwner, upload.single("vehicle[image]"), validateVehicle, wrapAsync(vehicleController.updateVehicle));
+router.put("/:id", isLoggedIn, isVehicleOwner, upload.array('vehicle[image]', 5), validateVehicle, wrapAsync(vehicleController.updateVehicle));
 
 // Delete vehicle
 router.delete("/:id", isLoggedIn, isVehicleOwner, wrapAsync(vehicleController.deleteVehicle));

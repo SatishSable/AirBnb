@@ -7,6 +7,10 @@ const dhabaSchema = new Schema({
         required: true,
     },
     description: String,
+    images: [{
+        url: String,
+        filename: String,
+    }],
     image: {
         url: String,
         filename: String,

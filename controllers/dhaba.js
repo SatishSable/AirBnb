@@ -37,21 +37,21 @@ module.exports.createDhaba = async (req, res) => {
     const newDhaba = new Dhaba(req.body.dhaba);
     newDhaba.owner = req.user._id;
 
-    if (req.file) {
-        newDhaba.image = {
-            url: req.file.path,
-            filename: req.file.filename
-        };
+    // Handle multiple image uploads
+    if (req.files && req.files.length > 0) {
+        let uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        newDhaba.images = uploadedImages;
+        newDhaba.image = uploadedImages[0];
     }
 
-    // Default geometry if not provided
+    // Default geometry
     newDhaba.geometry = {
         type: "Point",
-        coordinates: [77.5946, 12.9716] // Default Bangalore
+        coordinates: [77.5946, 12.9716]
     };
 
     await newDhaba.save();
-    req.flash("success", "Dhaba listed successfully!");
+    req.flash("success", "Dining spot listed successfully!");
     res.redirect("/dhabas");
 };
 
@@ -71,15 +71,15 @@ module.exports.updateDhaba = async (req, res) => {
     const { id } = req.params;
     const dhaba = await Dhaba.findByIdAndUpdate(id, { ...req.body.dhaba });
 
-    if (req.file) {
-        dhaba.image = {
-            url: req.file.path,
-            filename: req.file.filename
-        };
+    // Handle multiple image uploads
+    if (req.files && req.files.length > 0) {
+        let uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        dhaba.images = uploadedImages;
+        dhaba.image = uploadedImages[0];
         await dhaba.save();
     }
 
-    req.flash("success", "Dhaba updated successfully!");
+    req.flash("success", "Dining spot updated successfully!");
     res.redirect(`/dhabas/${id}`);
 };
 

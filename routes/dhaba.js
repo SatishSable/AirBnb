@@ -14,7 +14,7 @@ router.get("/", wrapAsync(dhabaController.index));
 router.get("/new", isLoggedIn, dhabaController.renderNewForm);
 
 // Create dhaba
-router.post("/", isLoggedIn, upload.single("dhaba[image]"), validateDhaba, wrapAsync(dhabaController.createDhaba));
+router.post("/", isLoggedIn, upload.array('dhaba[image]', 5), validateDhaba, wrapAsync(dhabaController.createDhaba));
 
 // Show dhaba
 router.get("/:id", wrapAsync(dhabaController.showDhaba));
@@ -23,7 +23,7 @@ router.get("/:id", wrapAsync(dhabaController.showDhaba));
 router.get("/:id/edit", isLoggedIn, isDhabaOwner, wrapAsync(dhabaController.renderEditForm));
 
 // Update dhaba
-router.put("/:id", isLoggedIn, isDhabaOwner, upload.single("dhaba[image]"), validateDhaba, wrapAsync(dhabaController.updateDhaba));
+router.put("/:id", isLoggedIn, isDhabaOwner, upload.array('dhaba[image]', 5), validateDhaba, wrapAsync(dhabaController.updateDhaba));
 
 // Delete dhaba
 router.delete("/:id", isLoggedIn, isDhabaOwner, wrapAsync(dhabaController.deleteDhaba));

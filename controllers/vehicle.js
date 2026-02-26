@@ -39,28 +39,32 @@ module.exports.createVehicle = async (req, res) => {
     const newVehicle = new Vehicle(req.body.vehicle);
     newVehicle.owner = req.user._id;
 
-    if (req.file) {
-        newVehicle.image = {
-            url: req.file.path,
-            filename: req.file.filename
-        };
+    // Handle multiple image uploads
+    if (req.files && req.files.length > 0) {
+        let uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        newVehicle.images = uploadedImages;
+        newVehicle.image = uploadedImages[0];
     }
 
-    // Geocode location with Mapbox (fallback if no result)
-    let response = await geocodingClient.forwardGeocode({
-        query: newVehicle.location,
-        limit: 1,
-    }).send();
-
-    if (response.body.features.length > 0) {
-        newVehicle.geometry = response.body.features[0].geometry;
-        newVehicle.mapboxPlaceName = response.body.features[0].place_name;
-    } else {
-        newVehicle.geometry = {
-            type: "Point",
-            coordinates: [77.5946, 12.9716] // Default Bangalore
-        };
-        newVehicle.mapboxPlaceName = undefined;
+    // Geocode with error handling
+    try {
+        if (mapBoxToken) {
+            let response = await geocodingClient.forwardGeocode({
+                query: newVehicle.location,
+                limit: 1,
+            }).send();
+            if (response.body.features.length > 0) {
+                newVehicle.geometry = response.body.features[0].geometry;
+                newVehicle.mapboxPlaceName = response.body.features[0].place_name;
+            } else {
+                newVehicle.geometry = { type: "Point", coordinates: [77.5946, 12.9716] };
+            }
+        } else {
+            newVehicle.geometry = { type: "Point", coordinates: [77.5946, 12.9716] };
+        }
+    } catch (err) {
+        console.log("\u26a0\ufe0f Vehicle geocoding failed:", err.message);
+        newVehicle.geometry = { type: "Point", coordinates: [77.5946, 12.9716] };
     }
 
     await newVehicle.save();
@@ -94,22 +98,27 @@ module.exports.updateVehicle = async (req, res) => {
     const nextLocation = (vehicleUpdate.location || "").trim();
 
     if (nextLocation && nextLocation !== prevLocation) {
-        let response = await geocodingClient.forwardGeocode({
-            query: nextLocation,
-            limit: 1,
-        }).send();
-
-        if (response.body.features.length > 0) {
-            vehicleUpdate.geometry = response.body.features[0].geometry;
-            vehicleUpdate.mapboxPlaceName = response.body.features[0].place_name;
+        try {
+            if (mapBoxToken) {
+                let response = await geocodingClient.forwardGeocode({
+                    query: nextLocation,
+                    limit: 1,
+                }).send();
+                if (response.body.features.length > 0) {
+                    vehicleUpdate.geometry = response.body.features[0].geometry;
+                    vehicleUpdate.mapboxPlaceName = response.body.features[0].place_name;
+                }
+            }
+        } catch (err) {
+            console.log("\u26a0\ufe0f Vehicle update geocoding failed:", err.message);
         }
     }
 
-    if (req.file) {
-        vehicleUpdate.image = {
-            url: req.file.path,
-            filename: req.file.filename
-        };
+    // Handle multiple image uploads
+    if (req.files && req.files.length > 0) {
+        let uploadedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        vehicleUpdate.images = uploadedImages;
+        vehicleUpdate.image = uploadedImages[0];
     }
 
     await Vehicle.findByIdAndUpdate(id, vehicleUpdate);
