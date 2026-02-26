@@ -81,7 +81,7 @@ module.exports.verifyAndCompleteSignup = async (req, res, next) => {
       if (err) {
         return next(err);
       }
-      req.flash("success", "Welcome to Wanderlust! Your email has been verified. 🎉");
+      req.flash("success", "Welcome to Elite Passage! Your email has been verified. 🎉");
       res.redirect("/listings");
     });
 
@@ -116,7 +116,7 @@ module.exports.renderLogin = (req, res) => {
 }
 
 module.exports.login = async (req, res) => {
-  req.flash("success", "Welcome back to wanderlust!");
+  req.flash("success", "Welcome back to Elite Passage!");
   let redirectUrl = res.locals.redirectUrl || "/listings"
   res.redirect(redirectUrl);
 }

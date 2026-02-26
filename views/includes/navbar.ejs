@@ -62,7 +62,7 @@
   .navbar-brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0;
     text-decoration: none;
     transition: all 0.3s ease;
   }
@@ -71,20 +71,9 @@
     opacity: 0.9;
   }
 
-  .navbar-brand .fa-airbnb {
-    font-size: 2rem;
-    color: var(--nav-gold) !important;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  }
-
-  .navbar-brand .brand-text {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 1.4rem;
-    font-weight: 500;
-    font-style: italic;
-    color: #FFFFFF !important;
-    letter-spacing: 0.05em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  .navbar-brand .brand-svg {
+    height: 60px;
+    width: auto;
   }
 
   /* Navigation Links - Refined Style */
@@ -322,12 +311,8 @@
       font-size: 0.7rem;
     }
 
-    .navbar-brand .brand-text {
-      font-size: 1.2rem;
-    }
-
-    .navbar-brand .fa-airbnb {
-      font-size: 1.75rem;
+    .navbar-brand .brand-svg {
+      height: 50px;
     }
   }
 
@@ -413,8 +398,19 @@
   <div class="container-fluid">
     <!-- Brand -->
     <a class="navbar-brand" href="/">
-      <i class="fa-brands fa-airbnb"></i>
-      <span class="brand-text d-none d-md-inline">WanderLust</span>
+      <svg class="brand-svg" viewBox="0 0 750 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="goldLuxuryNav" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#C6A75E"/>
+            <stop offset="50%" stop-color="#F0D78C"/>
+            <stop offset="100%" stop-color="#B8892D"/>
+          </linearGradient>
+        </defs>
+        <line x1="200" y1="80" x2="550" y2="80" stroke="url(#goldLuxuryNav)" stroke-width="1.2"/>
+        <text x="50%" y="135" text-anchor="middle" font-family="Cinzel, Playfair Display, serif" font-size="64" letter-spacing="10" fill="url(#goldLuxuryNav)">ELITE</text>
+        <text x="50%" y="180" text-anchor="middle" font-family="Cinzel, Playfair Display, serif" font-size="24" letter-spacing="16" fill="#C6A75E">PASSAGE</text>
+        <line x1="260" y1="205" x2="490" y2="205" stroke="url(#goldLuxuryNav)" stroke-width="1"/>
+      </svg>
     </a>
 
     <!-- Mobile Toggle -->
@@ -442,7 +438,7 @@
           <a class="nav-link" href="/vehicles">Vehicles</a>
           <a class="nav-link" href="/dhabas">Dining</a>
 
-          <% if (!currUser) { %>
+          <% if (typeof currUser === 'undefined' || !currUser) { %>
             <!-- Guest Menu -->
             <div class="dropdown">
               <div class="user-menu" data-bs-toggle="dropdown">

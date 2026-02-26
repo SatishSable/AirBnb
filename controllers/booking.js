@@ -135,7 +135,7 @@ module.exports.createRazorpayOrder = async (req, res) => {
         amount: order.amount,
         currency: order.currency,
         bookingId: newBooking._id,
-        name: "Wanderlust",
+        name: "Elite Passage",
         description: `Booking payment (${pendingBooking.type})`,
     });
 };

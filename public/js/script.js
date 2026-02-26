@@ -258,4 +258,4 @@ document.head.appendChild(toastStyles);
 // Export for use in other scripts
 window.showToast = showToast;
 
-console.log('✨ Wanderlust enhanced scripts loaded!');
+console.log('✨ Elite Passage enhanced scripts loaded!');

@@ -30,16 +30,16 @@ async function sendOTP(email, username) {
     const transporter = createTransporter();
 
     const mailOptions = {
-        from: `"WanderLust" <${process.env.EMAIL_USER}>`,
+        from: `"Elite Passage" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: "🔐 Your WanderLust Verification Code",
+        subject: "🔐 Your Elite Passage Verification Code",
         html: `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
         
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%); padding: 40px 32px; text-align: center;">
           <div style="font-size: 36px; margin-bottom: 8px;">✨</div>
-          <h1 style="color: #C9A227; font-size: 28px; margin: 0; font-weight: 600; letter-spacing: 1px;">WanderLust</h1>
+          <h1 style="color: #C9A227; font-size: 28px; margin: 0; font-weight: 600; letter-spacing: 1px;">Elite Passage</h1>
           <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin: 8px 0 0; letter-spacing: 0.5px;">Email Verification</p>
         </div>
 
@@ -47,7 +47,7 @@ async function sendOTP(email, username) {
         <div style="padding: 40px 32px;">
           <p style="color: #333; font-size: 16px; margin: 0 0 8px;">Hello <strong>${username}</strong>,</p>
           <p style="color: #666; font-size: 14px; line-height: 1.6; margin: 0 0 32px;">
-            Welcome to WanderLust! Use the verification code below to complete your signup. This code is valid for <strong>10 minutes</strong>.
+            Welcome to Elite Passage! Use the verification code below to complete your signup. This code is valid for <strong>10 minutes</strong>.
           </p>
 
           <!-- OTP Code Box -->
@@ -63,7 +63,7 @@ async function sendOTP(email, username) {
 
         <!-- Footer -->
         <div style="background: #f8f8f8; padding: 20px 32px; text-align: center; border-top: 1px solid #eee;">
-          <p style="color: #bbb; font-size: 11px; margin: 0;">© 2026 WanderLust. All rights reserved.</p>
+          <p style="color: #bbb; font-size: 11px; margin: 0;">© 2026 Elite Passage. All rights reserved.</p>
         </div>
       </div>
     `,

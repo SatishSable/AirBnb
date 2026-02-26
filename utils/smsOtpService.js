@@ -40,7 +40,7 @@ async function sendPaymentOTP(phone, userId) {
     if (twilioClient) {
         try {
             await twilioClient.messages.create({
-                body: `🔐 Your WanderLust payment OTP is: ${otp}. Valid for 5 minutes. Do NOT share this with anyone.`,
+                body: `🔐 Your Elite Passage payment OTP is: ${otp}. Valid for 5 minutes. Do NOT share this with anyone.`,
                 from: twilioPhone,
                 to: formattedPhone,
             });

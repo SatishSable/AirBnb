@@ -95,10 +95,10 @@
                 <span>Local restaurants & dhabas</span>
               </div>
             </div>
-            <div class="chatbot-welcome-btn" data-msg="Tell me about WanderLust">
+            <div class="chatbot-welcome-btn" data-msg="Tell me about Elite Passage">
               <i class="fas fa-circle-info"></i>
               <div class="chatbot-welcome-btn-text">
-                <span>About WanderLust</span>
+                <span>About Elite Passage</span>
                 <span>Learn what we offer</span>
               </div>
             </div>
@@ -121,7 +121,7 @@
 
       <!-- Footer -->
       <div class="chatbot-footer">
-        <span>Powered by <i class="fas fa-sparkles"></i> WanderLust AI</span>
+        <span>Powered by <i class="fas fa-sparkles"></i> Elite Passage AI</span>
       </div>
     `;
     document.body.appendChild(win);
@@ -257,10 +257,10 @@
               <span>Local restaurants & dhabas</span>
             </div>
           </div>
-          <div class="chatbot-welcome-btn" data-msg="Tell me about WanderLust">
+          <div class="chatbot-welcome-btn" data-msg="Tell me about Elite Passage">
             <i class="fas fa-circle-info"></i>
             <div class="chatbot-welcome-btn-text">
-              <span>About WanderLust</span>
+              <span>About Elite Passage</span>
               <span>Learn what we offer</span>
             </div>
           </div>
