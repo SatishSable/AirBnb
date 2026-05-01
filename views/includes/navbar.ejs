@@ -24,9 +24,13 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: none;
-    padding: 1rem 3rem;
+    padding: 0.5rem 3rem;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .navbar .container-fluid {
+    gap: 1.5rem;
   }
 
   /* When page has a hero section, navbar starts transparent and absolute */
@@ -46,7 +50,7 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
-    padding: 1rem 3rem;
+    padding: 0.5rem 3rem;
   }
 
   /* Transparent navbar over hero */
@@ -65,6 +69,7 @@
     gap: 0;
     text-decoration: none;
     transition: all 0.3s ease;
+    flex-shrink: 0;
   }
 
   .navbar-brand:hover {
@@ -72,7 +77,7 @@
   }
 
   .navbar-brand .brand-svg {
-    height: 60px;
+    height: 55px;
     width: auto;
   }
 
@@ -119,6 +124,10 @@
   }
 
   /* Search Container - Minimal Elegant */
+  .navbar-search-center {
+    margin-left: 1.5rem;
+  }
+
   .search-container {
     display: flex;
     align-items: center;
@@ -129,8 +138,9 @@
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    min-width: 260px;
-    max-width: 340px;
+    min-width: 220px;
+    max-width: 320px;
+    flex-shrink: 1;
   }
 
   .search-container:hover,
@@ -283,6 +293,13 @@
   }
 
   /* Responsive */
+  @media (max-width: 1200px) {
+    .search-container {
+      min-width: 180px;
+      max-width: 240px;
+    }
+  }
+
   @media (max-width: 992px) {
     .search-container {
       display: none;
@@ -312,7 +329,7 @@
     }
 
     .navbar-brand .brand-svg {
-      height: 50px;
+      height: 38px;
     }
   }
 
@@ -395,21 +412,23 @@
       });
     })();
   </script>
-  <div class="container-fluid">
+  <div class="container-fluid d-flex align-items-center">
     <!-- Brand -->
     <a class="navbar-brand" href="/">
       <svg class="brand-svg" viewBox="0 0 750 260" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="goldLuxuryNav" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#C6A75E"/>
-            <stop offset="50%" stop-color="#F0D78C"/>
-            <stop offset="100%" stop-color="#B8892D"/>
+            <stop offset="0%" stop-color="#C6A75E" />
+            <stop offset="50%" stop-color="#F0D78C" />
+            <stop offset="100%" stop-color="#B8892D" />
           </linearGradient>
         </defs>
-        <line x1="200" y1="80" x2="550" y2="80" stroke="url(#goldLuxuryNav)" stroke-width="1.2"/>
-        <text x="50%" y="135" text-anchor="middle" font-family="Cinzel, Playfair Display, serif" font-size="64" letter-spacing="10" fill="url(#goldLuxuryNav)">ELITE</text>
-        <text x="50%" y="180" text-anchor="middle" font-family="Cinzel, Playfair Display, serif" font-size="24" letter-spacing="16" fill="#C6A75E">PASSAGE</text>
-        <line x1="260" y1="205" x2="490" y2="205" stroke="url(#goldLuxuryNav)" stroke-width="1"/>
+        <line x1="200" y1="80" x2="550" y2="80" stroke="url(#goldLuxuryNav)" stroke-width="1.2" />
+        <text x="50%" y="135" text-anchor="middle" font-family="Cinzel, Playfair Display, serif" font-size="64"
+          letter-spacing="10" fill="url(#goldLuxuryNav)">ELITE</text>
+        <text x="50%" y="180" text-anchor="middle" font-family="Cinzel, Playfair Display, serif" font-size="24"
+          letter-spacing="16" fill="#C6A75E">PASSAGE</text>
+        <line x1="260" y1="205" x2="490" y2="205" stroke="url(#goldLuxuryNav)" stroke-width="1" />
       </svg>
     </a>
 
@@ -418,17 +437,18 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
+    <!-- Search beside brand -->
+    <div class="navbar-search-center d-none d-lg-flex">
+      <form class="search-container" action="/listings/search" method="GET">
+        <input type="text" name="location" placeholder="Search destinations..." />
+        <button class="search-btn" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
+
     <!-- Navbar Content -->
     <div class="collapse navbar-collapse" id="navbarContent">
-      <!-- Center Search -->
-      <div class="mx-auto d-none d-lg-flex">
-        <form class="search-container" action="/listings/search" method="GET">
-          <input type="text" name="location" placeholder="Search destinations..." />
-          <button class="search-btn" type="submit">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-        </form>
-      </div>
 
       <!-- Right Menu -->
       <div class="ms-auto">
@@ -438,7 +458,7 @@
           <a class="nav-link" href="/vehicles">Vehicles</a>
           <a class="nav-link" href="/dhabas">Dining</a>
 
-          <% if (typeof currUser === 'undefined' || !currUser) { %>
+          <% if (typeof currUser==='undefined' || !currUser) { %>
             <!-- Guest Menu -->
             <div class="dropdown">
               <div class="user-menu" data-bs-toggle="dropdown">

@@ -205,6 +205,11 @@ app.use("/admin", adminRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/api/chatbot", chatbotRouter);
 
+// Catch-all route for 404 Page Not Found
+app.use((req, res, next) => {
+  next(new ExpressError("Page Not Found", 404));
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something went wrong!" } = err;
